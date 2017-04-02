@@ -1,0 +1,9 @@
+
+The android_fopen trick is by netguy204.
+
+The vmath header is by Jan Bartipan.
+
+The stackframe capture is by Job Vranish.
+
+All other code is (c)2017 by Abraham Stolk.
+

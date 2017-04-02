@@ -1,0 +1,5 @@
+This software is (c)2017 by Abraham Stolk.
+
+This software is licensed under the Apache License 2.0
+http://opensource.org/licenses/Apache-2.0
+
