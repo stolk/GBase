@@ -44,7 +44,7 @@ int wavdb_load( const char* pkgname, const char* lname, const char** names, int*
 			fseek(f, hdrsize, SEEK_SET);
 			wavdb_waves[wavdb_sz] = (short*)malloc(wavdb_lengths[wavdb_sz] * sizeof(short));
 			const size_t res = fread(wavdb_waves[wavdb_sz], sizeof(short), wavdb_lengths[wavdb_sz], f);
-			ASSERT(res == wavdb_lengths[wavdb_sz]);
+			ASSERT((int)res == wavdb_lengths[wavdb_sz]);
 			fclose(f);
 			wavdb_sz++;
 			numLoaded++;
