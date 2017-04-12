@@ -11,6 +11,7 @@ static uint64_t xss[ 2 ] =
 void pseudoseedrand( uint64_t seed )
 {
 	xss[ 0 ] = seed;
+	xss[ 1 ] = 0x141010;
 }
 
 
@@ -24,3 +25,16 @@ uint64_t pseudorand( void )
 	return ( xss[ 1 ] = ( s1 ^ s0 ^ ( s1 >> 17 ) ^ ( s0 >> 26 ) ) ) + s0; // b, c
 }
 
+
+float pseudorand_float( void )
+{
+	uint64_t r = pseudorand();
+	return ((float)r) / 0xffffffffffffffff;
+}
+
+
+float pseudorand_range( float lo, float hi )
+{
+	const uint64_t r = pseudorand();
+	return lo + ((float)r) / ( 0xffffffffffffffff / (hi-lo) );
+}
