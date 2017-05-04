@@ -99,7 +99,7 @@ void quad_exit( void )
 }
 
 
-void quad_prepare( const rendercontext_t& rc )
+void quad_prepare( void )
 {
 	static int texturemapUniform = glpr_uniform( "texturemap" );
 	glActiveTexture ( GL_TEXTURE0 );
@@ -108,7 +108,7 @@ void quad_prepare( const rendercontext_t& rc )
 }
 
 
-void quad_draw( const char* tag, const rendercontext_t& rc, vec3_t xlat, vec3_t rotx, vec3_t roty )
+void quad_draw( const char* tag, vec3_t xlat, vec3_t rotx, vec3_t roty )
 {
 	txdb_use( tag );
 	CHECK_OGL
