@@ -18,6 +18,7 @@
 #	else
 #		include <GLES2/gl2.h>
 #		include <GLES2/gl2ext.h>
+#		define GL_HALF_FLOAT GL_HALF_FLOAT_OES
 #	endif
 #endif
 
