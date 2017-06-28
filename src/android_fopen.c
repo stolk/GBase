@@ -1,13 +1,13 @@
 // android fopen() trick by netguy204
 // http://www.50ply.com/blog/2013/01/19/loading-compressed-android-assets-with-file-pointer/
 
-#include <stdio.h>
-
-#include "android_fopen.h"
 #include <errno.h>
 #include <android/asset_manager.h>
 
+#define __USE_BSD
+#include "android_fopen.h"
 #include "logx.h"
+
 
 static int android_read(void* cookie, char* buf, int size)
 {

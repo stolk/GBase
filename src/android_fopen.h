@@ -1,8 +1,9 @@
 #ifndef ANDROID_FOPEN_H
 #define ANDROID_FOPEN_H
 
-#include <stdio.h>
-#include <android/asset_manager.h>
+#include <stdio.h>			// for funopen()
+
+#include <android/asset_manager.h>	// for AAssetManager
 
 #ifdef __cplusplus
 extern "C" {
