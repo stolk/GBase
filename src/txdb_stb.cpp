@@ -54,6 +54,19 @@ unsigned int txdb_load_from_memory( const char* name, const unsigned int* raw, i
 #endif
 	CHECK_OGL
 
+	// Reuse a slot?
+	for ( int i=0; i<txdb_sz; ++i )
+	{
+		if ( !strcmp( txdb_names[ i ], name ) )
+		{
+			// Refresh the old texture at this slot.
+			glDeleteTextures( 1, txdb_values+i );
+			txdb_values[ i ] = texture;
+			return texture;
+		}
+	}
+
+	// No. Put in a new slot.
 	ASSERT( txdb_sz < TXDB_MAX_SZ );
 	txdb_names[ txdb_sz ] = name;
 	txdb_values[ txdb_sz ] = texture;
@@ -87,7 +100,7 @@ int txdb_load( const char* pkgname, const char* lname, const char** names, unsig
 			unsigned int texture = txdb_load_from_memory( name, (unsigned int*)p, szw, szh, compressed );
 			numLoaded += 1;
 			stbi_image_free(p);
-			//LOGI("Loaded %s(%dx%d) as %02x at %p\n", name, szw, szh, texture, p );
+			LOGI( "Loaded %s(%dx%d) as %02x at %p with numch=%d\n", name, szw, szh, texture, p, numch );
 			if ( values ) values[ i ] = texture;
 		}
 	}
