@@ -12,7 +12,7 @@
 #include <float.h>
 
 
-static const int NFY_MAX_OBS = 64;
+static const int NFY_MAX_OBS = 96;
 static int nfy_num_obs = 0;
 static notificationcallback_t nfy_cbk[ NFY_MAX_OBS ];
 static const char* nfy_lbl[ NFY_MAX_OBS ];
