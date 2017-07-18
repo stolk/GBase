@@ -60,6 +60,8 @@ static float camera_rollangle = 0.0f;
 
 float camera_dist(void) { return dist; }
 
+void camera_setDist( float d ) { dist = d; }
+
 static void camera_scaleDist(float factor)
 {
 	dist = factor * dist;
@@ -525,6 +527,13 @@ float camera_elevationAngle( void )
 {
 	return elevationAngle;
 }
+
+
+void camera_setElevationAngle( float a )
+{
+	elevationAngle = a;
+}
+
 
 
 float camera_orbitAngle( void )

@@ -60,6 +60,8 @@ extern vec3_t camera_aim( void );
 
 extern float camera_elevationAngle( void );
 
+extern void camera_setElevationAngle( float a );
+
 extern float camera_orbitAngle( void );
 
 extern void camera_alignTo(vec3_t d, float margin, float dt);
@@ -67,6 +69,8 @@ extern void camera_alignTo(vec3_t d, float margin, float dt);
 extern void camera_update(float dt);
 
 extern float camera_dist(void);
+
+extern void camera_setDist(float d);
 
 extern void camera_setCoiPid( float p, float i, float d );
 
