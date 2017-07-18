@@ -2060,7 +2060,7 @@ namespace VMATH_NAMESPACE
 	    data[15] = 1;
 	 }
 
-	 Vector3<T> getTranslation()
+	 Vector3<T> getTranslation() const
 	 { return Vector3<T>(at(3,0),at(3,1),at(3,2)); }
 
 	 /**
