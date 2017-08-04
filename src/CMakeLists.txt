@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.4.1)
 # build libgbase as a static lib
 add_library(gbase STATIC
 logx.c
+assertreport.c
 kv.cpp
 elapsed.c
 pseudorand.c
