@@ -64,8 +64,10 @@ extern FILE* logx_file;
 { \
 if ( !(C) ) \
 {\
-LOGE("ASSERT FAILED at %s(%d): %s / " FMT, __BASE_FILE__, __LINE__, #C, __VA_ARGS__); \
-if ( asserthook ) asserthook( #C, __BASE_FILE__, __LINE__ ); \
+char m[512]; \
+snprintf( m, sizeof(m), "%s / " FMT, #C, __VA_ARGS__ ); \
+LOGE("ASSERT FAILED at %s(%d): %s", __BASE_FILE__, __LINE__, m); \
+if ( asserthook ) asserthook( m, __BASE_FILE__, __LINE__ ); \
 }\
 assert( C ); \
 }
