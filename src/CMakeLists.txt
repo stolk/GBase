@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 3.4.1)
 
-# build native_app_glue as a static lib
+# build libgbase as a static lib
 add_library(gbase STATIC
 logx.c
 kv.cpp

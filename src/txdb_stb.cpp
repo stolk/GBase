@@ -100,7 +100,7 @@ int txdb_load( const char* pkgname, const char* lname, const char** names, unsig
 			unsigned int texture = txdb_load_from_memory( name, (unsigned int*)p, szw, szh, compressed );
 			numLoaded += 1;
 			stbi_image_free(p);
-			LOGI( "Loaded %s(%dx%d) as %02x at %p with numch=%d\n", name, szw, szh, texture, p, numch );
+			//LOGI( "Loaded %s(%dx%d) as %02x at %p with numch=%d\n", name, szw, szh, texture, p, numch );
 			if ( values ) values[ i ] = texture;
 		}
 	}
