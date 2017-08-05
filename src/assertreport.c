@@ -80,9 +80,10 @@ int assertreport_exit( void )
 }
 
 #if defined(MAIN)
-int main()
+int main( int argc, char* argv[] )
 {
-	assertreport_init( "54.149.106.23", 2323 );
+	if ( argc != 2 ) { fprintf(stderr, "Usage: %s hostname", argv[0]); }
+	assertreport_init( argv[1], 2323 );
 	assertreport_send( "HELLO", 6 );
 	assertreport_exit();
 }
