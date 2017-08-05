@@ -68,8 +68,7 @@ int glpr_uniform( const char* nm )
 		if ( !strcmp( nm, glpr_name[ i ] ) )
 			return glpr_unif[ i ];
 	}
-	LOGE( "uniform '%s' for program %d not found.", nm, glpr_usedprogram );
-	ASSERT( 0 );
+	ASSERTM( 0, "uniform '%s' for program %d not found. Searched [%d,%d).", nm, glpr_usedprogram, glpr_searchindex, glpr_numu );
 	return -1;
 }
 
