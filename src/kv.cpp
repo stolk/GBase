@@ -29,7 +29,7 @@ void kv_set_int( const char* key, const int v )
 #endif
 	if ( !f )
 		LOGE( "Cannot write key-value pair to '%s'", fname );
-	ASSERT( f );
+	ASSERTM( f, "Failed to open %s for writing.", fname );	// Has triggered in the wild, once.
 	fprintf( f, "%d", v );
 	fclose( f );
 }
