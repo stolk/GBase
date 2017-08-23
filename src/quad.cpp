@@ -154,6 +154,56 @@ void quad_draw( const char* tag, vec3_t xlat, vec3_t rotx, vec3_t roty )
 }
 
 
+void quad_draw_set( const char* tag, int cnt, const vec3_t* xlat, const vec3_t* rotx, const vec3_t* roty )
+{
+	if ( cnt <= 0 ) return;
+
+	txdb_use( tag );
+	CHECK_OGL
+
+#if defined( USE_VAO )
+	glBindVertexArray( vao );
+	CHECK_OGL
+#else
+	glBindBuffer( GL_ARRAY_BUFFER, vbo );
+	CHECK_OGL
+	const int stride = 4;
+
+	glVertexAttribPointer( ATTRIB_VERTEX, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*) 0 );
+	glEnableVertexAttribArray( ATTRIB_VERTEX );
+    
+	glVertexAttribPointer( ATTRIB_UV, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*) ( 2 * sizeof(float) ) );
+	glEnableVertexAttribArray( ATTRIB_UV );
+#endif
+
+	for ( int i=0; i<cnt; ++i )
+	{
+		static int rotxUniform = glpr_uniform( "rotx" );
+		static int rotyUniform = glpr_uniform( "roty" );
+		static int translationUniform = glpr_uniform( "translation" );
+		glUniform2f( rotxUniform, rotx[i].x, rotx[i].y );
+		glUniform2f( rotyUniform, roty[i].x, roty[i].y );
+		glUniform2f( translationUniform, xlat[i].x, xlat[i].y );
+		CHECK_OGL
+
+		const int offset = 0;
+		glDrawArrays( GL_TRIANGLES, offset, numv );
+		CHECK_OGL
+	}
+
+#if defined( USE_VAO )
+	glBindVertexArray( 0 );
+#else
+	glDisableVertexAttribArray( ATTRIB_VERTEX );
+	glDisableVertexAttribArray( ATTRIB_UV );
+
+	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+#endif
+
+	CHECK_OGL
+}
+
+
 void quad_draw_dof( void )
 {
 #if defined( USE_VAO )
