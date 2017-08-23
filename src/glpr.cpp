@@ -23,6 +23,7 @@ static int		glpr_usedprogram;
 void glpr_init( void )
 {
 	glpr_numu = 0;
+	glpr_usedprogram = -1;
 	for ( int i=0; i<MAXUNIFORMS; ++i )
 	{
 		glpr_unif[ i ] = -1;
@@ -52,6 +53,7 @@ void glpr_dump( void )
 
 void glpr_use( unsigned int program )
 {
+	ASSERTM( program >= 0, "Invalid program specified in glpr_use( %d )", program );
 	glUseProgram( program );
 	CHECK_OGL
 	for ( glpr_searchindex = 0; glpr_searchindex < glpr_numu; ++glpr_searchindex )
@@ -63,6 +65,7 @@ void glpr_use( unsigned int program )
 
 int glpr_uniform( const char* nm )
 {
+	ASSERTM( glpr_usedprogram >= 0, "Cannot get uniform %s if glpr_use was not called.", nm );
 	for ( int i=glpr_searchindex; i<glpr_numu; ++i )
 	{
 		if ( !strcmp( nm, glpr_name[ i ] ) )
@@ -177,6 +180,7 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	GLuint vertShader, fragShader;
 
 	program = glCreateProgram();
+	CHECK_OGL
 
 	bool vshOk = glpr_compile( &vertShader, GL_VERTEX_SHADER, src_vsh );
 	if ( !vshOk )
