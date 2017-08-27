@@ -31,4 +31,7 @@ extern void txdb_prt( void );
 //! Directory where the images reside.
 extern const char* txdb_path;
 
+//! Workaround for Cairo / Inkscape screw up on colours with alpha 0.
+extern unsigned int txdb_bgcolour;
+
 #endif

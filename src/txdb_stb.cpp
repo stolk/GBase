@@ -27,6 +27,7 @@ static GLuint txdb_values[ TXDB_MAX_SZ ];
 
 const char* txdb_path=".";
 
+unsigned int txdb_bgcolour = 0x00000000;
 
 unsigned int txdb_load_from_memory( const char* name, const unsigned int* raw, int szw, int szh, bool compressed )
 {
@@ -87,7 +88,7 @@ int txdb_load( const char* pkgname, const char* lname, const char** names, unsig
 		int szw=0;
 		int szh=0;
 		int numch=0;
-		unsigned char* p = stbi_load(fname, &szw, &szh, &numch, 4);
+		unsigned int* p = (unsigned int*) stbi_load(fname, &szw, &szh, &numch, 4);
 		if (!p)
 		{
 			LOGE("Failed to find asset %s", fname);
@@ -96,6 +97,10 @@ int txdb_load( const char* pkgname, const char* lname, const char** names, unsig
 		else
 		{
 			ASSERT(szw && szh);
+			//LOGI( "%s has pixel(0,0) %x", name, * ( (unsigned int*)p ) );
+			for ( int j=0; j<szw*szh; ++j )
+				if ( p[j] == 0x00000000 )
+					p[j] = txdb_bgcolour;
 			const bool compressed = false;
 			unsigned int texture = txdb_load_from_memory( name, (unsigned int*)p, szw, szh, compressed );
 			numLoaded += 1;
@@ -111,6 +116,7 @@ int txdb_load( const char* pkgname, const char* lname, const char** names, unsig
 void txdb_init(void)
 {
 	stbi_set_flip_vertically_on_load(1);
+	//stbi_set_unpremultiply_on_load(1);
 }
 
 
