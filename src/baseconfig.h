@@ -61,7 +61,7 @@
 
 
 // We use the GL DEBUG PROC extension on XWin and MSWin.
-#	if !defined( OSX ) && !defined( IPHN ) && !defined( APTV ) && !defined( PLAY )
+#	if !defined( OSX ) && !defined( IPHN ) && !defined( APTV ) && !defined( PLAY ) && !defined( JS )
 #		define USEGLDEBUGPROC
 #	endif
 

@@ -5,7 +5,7 @@
 #	include <mach/mach_time.h>
 #endif
 
-#if defined( XWIN ) || defined( ANDROID )
+#if defined( XWIN ) || defined( ANDROID ) || defined( JS )
 #	include <time.h>
 #endif
 
@@ -30,7 +30,7 @@ double elapsed_ms_since_start( void )
 	const uint64_t diff = c1-c0;
 	const double ms = diff / 1000000.0;
 	return ms;
-#elif defined( XWIN ) || defined( ANDROID )
+#elif defined( XWIN ) || defined( ANDROID ) || defined( JS )
 	static struct timespec res0;
 	struct timespec res1;
 	if ( virgin )
