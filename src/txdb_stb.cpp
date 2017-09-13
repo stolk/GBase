@@ -18,6 +18,7 @@
 #include "checkogl.h"
 
 #define STB_IMAGE_IMPLEMENTATION
+#define STBI_ONLY_PNG
 #include "stb_image.h"
 
 static const int TXDB_MAX_SZ=96;
@@ -138,7 +139,7 @@ void txdb_use(const char* name)
             CHECK_OGL
             return;
         }
-    LOGE( "Texture '%s' not stored in txdb.", name );
+    LOGE( "Texture '%s' not stored in txdb of size %d.", name, txdb_sz );
 }
 
 
