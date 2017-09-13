@@ -4,6 +4,8 @@
 
 extern void kv_init( const char* filesPath );
 
+extern bool kv_sync( void );
+
 extern void kv_set_int( const char* key, const int v );
 
 extern void kv_set_flt( const char* key, const float v );
