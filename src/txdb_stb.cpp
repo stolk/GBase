@@ -8,6 +8,11 @@
 #	define fopen android_fopen
 #endif
 
+// Sigh, not defined on MacOS?
+#if !defined(GL_COMPRESSED_RGB8_ETC2)
+#      define GL_COMPRESSED_RGB8_ETC2           0x9274
+#endif
+
 #include <math.h>
 #include <stdio.h>	// for snprintf()
 #include <sys/types.h>	// req'd by VisualC for off_t
