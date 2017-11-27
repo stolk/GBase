@@ -42,8 +42,8 @@ static float relaxFactor = -FLT_MAX;
 	
 static	bool validViewMat;	// is the view transformation valid, or does it need recalculation from transform mat?
 
-static  float fovy_radians = 0.3 * M_PI;
-static  float fovx_radians = 0.3 * M_PI;
+static  float fovy_radians = 0.3f * M_PI;
+static  float fovx_radians = 0.3f * M_PI;
 
 static float minZ = -0.12f;
 
@@ -120,13 +120,13 @@ static void onCameraControl(const char* msg)
 	if ( rf == 0.0f ) { relaxOrbit = -FLT_MAX; relaxElevation = -FLT_MAX; }
 	if ( rso )
 	{
-		if      ( orbitAngle < -0.75*M_PI )
+		if      ( orbitAngle < -0.75f*M_PI )
 		relaxOrbit = -1.00*-M_PI;
-		else if ( orbitAngle < -0.25*M_PI )
+		else if ( orbitAngle < -0.25f*M_PI )
 		relaxOrbit = -0.50*M_PI;
-		else if ( orbitAngle <  0.25*M_PI )
+		else if ( orbitAngle <  0.25f*M_PI )
 		relaxOrbit =  0.00*M_PI;
-		else if ( orbitAngle <  0.75*M_PI )
+		else if ( orbitAngle <  0.75f*M_PI )
 		relaxOrbit =  0.50*M_PI;
 		else
 		relaxOrbit =  1.00*M_PI;
@@ -137,7 +137,7 @@ static void onCameraControl(const char* msg)
 void camera_init( float fovy )
 {
 	fovy_radians = fovy;
-	actualPos = desiredPos = vec3_t( -4, 0, 1.4 );
+	actualPos = desiredPos = vec3_t( -4, 0, 1.4f );
 	desiredCoi = actualCoi = vec3_t( 0, 0, 0 );
     
 	desiredPan = actualPan = 0.0;
@@ -152,18 +152,18 @@ void camera_init( float fovy )
 	proj.identity();
 	validViewMat = false;
     
-	coiPid.P = -0.070;
-	coiPid.I = -0.060;
-	coiPid.D = -0.008;
+	coiPid.P = -0.070f;
+	coiPid.I = -0.060f;
+	coiPid.D = -0.008f;
     
-	panPid.P = -0.05;
-	panPid.I = -0.05;
-	panPid.D = -0.01;
+	panPid.P = -0.05f;
+	panPid.I = -0.05f;
+	panPid.D = -0.01f;
 	panPid.angular = true;
     
-	alignPid.P = -0.03;
-	alignPid.I = -0.06;
-	alignPid.D = -0.05;
+	alignPid.P = -0.03f;
+	alignPid.I = -0.06f;
+	alignPid.D = -0.05f;
 	alignPid.angular = false;
 	
 	pid3_reset( coiPid );
