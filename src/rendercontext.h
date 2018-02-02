@@ -52,5 +52,8 @@ const int ATTRIB_LIMB	= 7;
 // For tracks shader
 const int ATTRIB_INTENS	= 1;
 
+// For font shader
+const int ATTRIB_OPACIT = 1;
+
 
 #endif
