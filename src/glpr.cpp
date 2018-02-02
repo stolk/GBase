@@ -228,8 +228,11 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	numbound += bind_attribute( program, attributes, "timeoffset", ATTRIB_TMOFFS );
 	// specific to the little bike that could.
 	numbound += bind_attribute( program, attributes, "intensity", ATTRIB_INTENS );
+	// specific to font rendering.
+	numbound += bind_attribute( program, attributes, "opacity", ATTRIB_OPACIT );
 
 	//LOGI( "bound %d attributes for shader %s", numbound, name );
+	(void)numbound;
 
 	// Link program.
 	if ( !glpr_link( program ) )
