@@ -26,12 +26,12 @@
 	{ \
 		const size_t written = fwrite(V, sizeof(V[0]), CNT, F); \
 		ASSERT(written != static_cast<size_t>(-1)); \
-		ASSERT(written == CNT); \
+		ASSERT(written == (size_t)CNT); \
 	} \
 	else \
 	{ \
 		const size_t numread = fread( V, sizeof(V[0]), CNT, F); \
-		ASSERT(numread == CNT); \
+		ASSERT(numread == (size_t)CNT); \
 	} \
 }
 
