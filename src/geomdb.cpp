@@ -533,6 +533,7 @@ float* geomdb_fetch( geomdesc_t* geomdesc )
 	if ( !dir )
 	{
 		LOGE( "Cannot open dir %s", geomdb_path );
+		return 0;
 	}
 	struct dirent* entry;
 	while ( ( entry = readdir( dir ) ) != 0 )
