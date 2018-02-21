@@ -109,6 +109,14 @@ static void onCameraControl(const char* msg)
 	const float aspectRatio = nfy_flt( msg, "aspectRatio" );
 	const int offaxis = nfy_int( msg, "offaxis" );
 	if ( aspectRatio > -FLT_MAX ) camera_setAspectRatio( aspectRatio, 0.1f, 150.0f, offaxis>0 );
+	
+	const int reset = nfy_int( msg, "reset" );
+	if ( reset >= 1 )
+	{
+		pid3_reset( coiPid );
+		pid1_reset( panPid );
+		pid1_reset( alignPid );
+	}
 
 	const float ro  = nfy_flt( msg, "relaxOrbit" );
 	const float re  = nfy_flt( msg, "relaxElevation" );
@@ -152,18 +160,20 @@ void camera_init( float fovy )
 	proj.identity();
 	validViewMat = false;
     
-	coiPid.P = -0.070f;
-	coiPid.I = -0.060f;
-	coiPid.D = -0.008f;
-    
-	panPid.P = -0.05f;
-	panPid.I = -0.05f;
-	panPid.D = -0.01f;
+	coiPid.P = -0.030f;
+	coiPid.I = -0.004f;
+	coiPid.D = -0.003f;
+	
+	// Pan PID is not used, because we hard lock the camera to the vehicle.
+	panPid.P = -0.050f;
+	panPid.I = -0.040f;
+	panPid.D = -0.005f;
 	panPid.angular = true;
-    
-	alignPid.P = -0.03f;
-	alignPid.I = -0.06f;
-	alignPid.D = -0.05f;
+	
+	// Align PID is not used, because we never call camera_alignTo() in this game.
+	alignPid.P = -0.003f;
+	alignPid.I = -0.004f;
+	alignPid.D = -0.003f;
 	alignPid.angular = false;
 	
 	pid3_reset( coiPid );

@@ -1,4 +1,23 @@
 
+static inline int num_120Hz_steps( double elapsed )
+{
+	// Our simulation frequency is 120Hz, an 8⅓  (eight one third) ms period.
+	double e = 1 / 120.0;
+
+	// We will pretend our display sync rate is one of thse:
+	     if ( elapsed > 4.5 * e )
+		return 5;			// 24 Hz	( .. to 26.67 Hz )
+	else if ( elapsed > 3.5 * e )
+		return 4;			// 30 Hz	( 26.67 Hz to 34.39 Hz )
+	else if ( elapsed > 2.5 * e )
+		return 3;			// 40 Hz	( 34.29 Hz to 48.00 Hz )
+	else if ( elapsed > 1.5 * e )
+		return 2;			// 60 Hz	( 48.00 Hz to 80.00 Hz )
+	else
+		return 1;			// 120 Hz	( 80.00 Hz to .. )
+}
+
+
 static inline int num_240Hz_steps( double elapsed )
 {
 	// Our simulation frequency is 240Hz, a 4⅙  (four one sixth) ms period.
