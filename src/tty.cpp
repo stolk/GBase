@@ -22,13 +22,6 @@ static float outputCompletion=0.0;
 static bool autoHidden=false;
 static float timeSinceWrite=0;
 
-#if defined( IPHN )
-#define glGenVertexArrays glGenVertexArraysOES
-#define glBindVertexArray glBindVertexArrayOES
-#define glDeleteVertexArrays glDeleteVertexArraysOES
-#endif
-
-
 static float fntdata[] =
 {
 	1,2, 0,1,  0,1, 0,-1,  0,-1, 1,-2,	// ( (40)
