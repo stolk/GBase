@@ -10,6 +10,31 @@
 #endif
 
 
+double elapsed_ms_since_last_call( void )
+{
+#if defined( IPHN ) || defined( APTV ) || defined( OSX )
+	static int virgin = 1;
+	static struct mach_timebase_info tbi;
+	static uint64_t prev;
+	if ( virgin )
+	{
+		mach_timebase_info( &tbi );
+		prev = mach_absolute_time();
+		virgin = 0;
+	}
+	uint64_t curr = mach_absolute_time();
+	uint64_t delt = curr - prev;
+	prev = curr;
+	delt = delt / tbi.denom;
+	delt = delt * tbi.numer;
+	// now we have the delta in nanoseconds.
+	return delt / 1000000.0;
+#else
+#	error "elapsed_ms_since_start() has not been implemented for this architecture."
+#endif
+}
+
+
 double elapsed_ms_since_start( void )
 {
 	static int virgin=1;
@@ -44,7 +69,7 @@ double elapsed_ms_since_start( void )
 	const double delta = delta_sec + delta_nsec/1e9;
 	return delta * 1000.0;
 #else
-#error "elapsed_ms_since_start() has not been implemented for this architecture."
+#	error "elapsed_ms_since_start() has not been implemented for this architecture."
 #endif
 }
 
