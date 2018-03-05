@@ -78,6 +78,14 @@
 //#	include <GLFW/glfw3.h>
 #endif
 
+#	if defined( IPHN ) && defined( USEES3 )
+#		define PUSHGROUPMARKER(A) glPushGroupMarkerEXT( 0, #A );
+#		define POPGROUPMARKER     glPopGroupMarkerEXT();
+#	else
+#		define PUSHMARKER(A)
+#		define POPMARKER
+#	endif
+
 #include <assert.h>
 #include "baseconfig.h"
 
