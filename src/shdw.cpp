@@ -259,9 +259,19 @@ void shdw_use( void )
 	if ( shadowDepth )
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, shadowDepth );
 
-
 	glViewport(0,0,SHADOWBUFFERSIZE,SHADOWBUFFERSIZE);
 	CHECK_OGL
+}
+
+
+void shdw_invalidate( void )
+{
+#if defined(USEES3)
+	glBindFramebuffer( GL_FRAMEBUFFER, shadowFramebuffer );
+	GLenum attachments[ 1 ] = { GL_DEPTH_ATTACHMENT };
+	glInvalidateFramebuffer( GL_FRAMEBUFFER, 1, attachments );
+	CHECK_OGL
+#endif
 }
 
 

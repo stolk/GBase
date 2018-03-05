@@ -11,6 +11,8 @@ extern void shdw_destroyFramebuffer( void );
 
 extern void shdw_use( void );
 
+extern void shdw_invalidate( void );
+
 extern void shdw_dump( void );
 
 extern unsigned int shdw_texture;
