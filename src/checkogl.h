@@ -82,8 +82,8 @@
 #		define PUSHGROUPMARKER(A) glPushGroupMarkerEXT( 0, #A );
 #		define POPGROUPMARKER     glPopGroupMarkerEXT();
 #	else
-#		define PUSHMARKER(A)
-#		define POPMARKER
+#		define PUSHGROUPMARKER(A)
+#		define POPGROUPMARKER
 #	endif
 
 #include <assert.h>

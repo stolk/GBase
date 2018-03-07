@@ -12,8 +12,8 @@
 
 double elapsed_ms_since_last_call( void )
 {
-#if defined( IPHN ) || defined( APTV ) || defined( OSX )
 	static int virgin = 1;
+#if defined( IPHN ) || defined( APTV ) || defined( OSX )
 	static struct mach_timebase_info tbi;
 	static uint64_t prev;
 	if ( virgin )
@@ -29,6 +29,20 @@ double elapsed_ms_since_last_call( void )
 	delt = delt * tbi.numer;
 	// now we have the delta in nanoseconds.
 	return delt / 1000000.0;
+#elif defined( ANDROID ) || defined( XWIN )
+	static struct timespec prev;
+	struct timespec curr;
+	if ( virgin )
+	{
+		clock_gettime( CLOCK_MONOTONIC, &prev );
+		virgin = 0;
+	}
+	clock_gettime( CLOCK_MONOTONIC, &curr );
+	const double delta_sec  = curr.tv_sec  - prev.tv_sec;
+	const double delta_nsec = curr.tv_nsec - prev.tv_nsec;
+	const double delta = delta_sec + delta_nsec/1e6;
+	prev = curr;
+	return delta;
 #else
 #	error "elapsed_ms_since_start() has not been implemented for this architecture."
 #endif
