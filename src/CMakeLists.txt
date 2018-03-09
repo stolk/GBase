@@ -20,11 +20,16 @@ meshdb.cpp
 quad.cpp
 shdw.cpp
 tty.cpp
+txdb_stb.cpp
+wavdb.cpp
 
-android_fopen.c txdb_stb.cpp wavdb.cpp
+Android/android_native_app_glue.c
+Android/androidsupport.cpp
+Android/android_fopen.c 
 )
 
 target_include_directories(gbase PRIVATE
+	./
 	$ENV{HOME}/src/opende/include/
 	$ENV{HOME}/src/stb/
 )

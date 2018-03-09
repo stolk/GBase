@@ -4,7 +4,7 @@
 #include "txdb.h"
 
 #if defined(ANDROID)
-#	include "android_fopen.h"
+#	include "Android/android_fopen.h"
 #	define fopen android_fopen
 #endif
 
