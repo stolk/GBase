@@ -80,8 +80,8 @@ double elapsed_ms_since_start( void )
 	clock_gettime( CLOCK_MONOTONIC, &res1 );
 	const double delta_sec  = res1.tv_sec  - res0.tv_sec;
 	const double delta_nsec = res1.tv_nsec - res0.tv_nsec;
-	const double delta = delta_sec + delta_nsec/1e9;
-	return delta * 1000.0;
+	const double delta_ms = delta_sec*1000 + delta_nsec/1e6;
+	return delta_ms;
 #else
 #	error "elapsed_ms_since_start() has not been implemented for this architecture."
 #endif
