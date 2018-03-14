@@ -13,6 +13,7 @@
 #include "android_native_app_glue.h"
 
 #include "logx.h"
+#include "assertreport.h"
 
 
 //! Helper function to lookup an EGL error string.
@@ -136,17 +137,17 @@ static void androidsupport_presentAssert( const char* condition, const char* fil
 	snprintf
 	(
 		m, sizeof(m),
-		"ASSERT FAILED:%s (%s:%d)", condition, file, line
+		"ASSERT FAILED %s v%s: %s (%s:%d)", TOSTRING(LOGTAG), TOSTRING(APPVER), condition, file, line
 	);
 	alertFatal( m );
 
-#if 0
-	assertreport_init( "54.149.106.23", 2323 );
-	assertreport_send( m, strlen(m)+1 );
-#endif
+	const char* server = "45.79.100.67";	// stolk.org
+	assertreport_init( server, 2323 );
+	assertreport_send( m, strlen( m )+1 );
+	assertreport_exit();
 
-	while( !androidsupport_assertDialogDismissed )
-		usleep( 100000 );
+	sleep( 2 );
+
 	int* p = 0;
 	*p = line;
 }
@@ -251,8 +252,13 @@ int androidsupport_initDisplay( void )
 	surface = eglCreateWindowSurface( display, config, engine->app->window, NULL );
 	CHECKEGL( eglCreateWindowSurface )
 
-	const EGLint contextAttribs[] = {
+	const EGLint contextAttribs[] =
+	{
+#if defined( USEES3 )
 		EGL_CONTEXT_CLIENT_VERSION, 3,
+#elif defined( USEES2 )
+		EGL_CONTEXT_CLIENT_VERSION, 2,
+#endif
 		EGL_NONE
 	};
 	context = eglCreateContext( display, config, NULL, contextAttribs );
