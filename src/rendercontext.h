@@ -34,6 +34,10 @@ const int ATTRIB_UVOFF  = 7;
 
 const int ATTRIB_UV     = 2;
 
+// For profile shader
+const int ATTRIB_RGB0	= 3;
+const int ATTRIB_RGB1	= 4;
+
 // For cloud shader
 const int ATTRIB_TMOFFS = 3;
 const int ATTRIB_SSDELT = 4;
