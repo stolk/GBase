@@ -1,6 +1,9 @@
 #ifndef LOGX_H
 #define LOGX_H
 
+#define STRINGIFY(X) #X
+#define TOSTRING(X) STRINGIFY(X)
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -17,9 +20,6 @@ extern FILE* logx_file;
 
 #include <android/log.h>
 #include <assert.h>
-
-#define STRINGIFY(X) #X
-#define TOSTRING(X) STRINGIFY(X)
 
 #if !defined(LOGTAG)
 #define LOGTAG base
