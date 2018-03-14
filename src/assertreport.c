@@ -27,12 +27,23 @@ static int assertreport_create_socket( void )
 	lngr.l_onoff  = 1;
 	lngr.l_linger = 2;
 
-	serversock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (serversock<0) perror("socket");
-	if (setsockopt(serversock,  SOL_SOCKET, SO_LINGER, &lngr, sizeof(lngr))) perror("setsockopt");
-	if (setsockopt(serversock,  SOL_SOCKET, SO_RCVBUF, &bufsz, sizeof(bufsz))) perror("setsockopt");
-
-	LOGI( "fd of serversock: %d", serversock );
+	serversock = socket( PF_INET, SOCK_DGRAM, IPPROTO_UDP );
+	if ( serversock<0 )
+	{
+		const char* s = strerror( errno );
+		LOGE( "socket() failed: %s", s );
+		return 0;
+	}
+	if ( setsockopt( serversock,  SOL_SOCKET, SO_LINGER, &lngr, sizeof(lngr) ) )
+	{
+		const char* s = strerror( errno );
+		LOGE( "setsockopt() failed: %s", s );
+	}
+	if ( setsockopt( serversock,  SOL_SOCKET, SO_RCVBUF, &bufsz, sizeof(bufsz) ) )
+	{
+		const char* s = strerror( errno );
+		LOGE( "setsockopt() failed: %s", s );
+	}
 	return 1;
 }
 
