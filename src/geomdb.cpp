@@ -43,11 +43,17 @@ static bool create_vbo( geomdesc_t* geomdesc, bool istextured )
 #endif
 
 		glGenBuffers( 1, &geomdesc->vbos[0] );
-		ASSERT( geomdesc->vbos[0] );
-        
+		if ( !geomdesc->vbos[0] )
+		{
+			// This happens for Android customers. I guess the device is out of memory?
+			const char* errortext;
+			ERR2STR( glGetError(), errortext );
+			ASSERTM( geomdesc->vbos[0], "Failed to create a vertex buffer object for %s: %s", geomdesc->tag, errortext );
+		}
+
 		glBindBuffer( GL_ARRAY_BUFFER, geomdesc->vbos[0] );
 		CHECK_OGL
-		
+
 		glBufferData( GL_ARRAY_BUFFER, geomdesc->vbo_sizes[0], geomdesc->vdata, GL_STATIC_DRAW );
 
 		int stride = 9*sizeof(float);			// vx,vy,vz,nx,ny,nz,r,g,b

@@ -170,6 +170,7 @@ int androidsupport_initDisplay( void )
 {
 	// initialize OpenGL ES and EGL
 	androidsupport_engine_t* engine = &androidsupport_engine;
+	ASSERT( engine->app->window );
 
 	/*
 	 * Here specify the attributes of the desired configuration.
