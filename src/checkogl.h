@@ -86,44 +86,44 @@
 #		define POPGROUPMARKER
 #	endif
 
-#include <assert.h>
-#include "baseconfig.h"
+
+#define ERR2STR( ERR, STR ) \
+	switch( ERR ) \
+	{ \
+	case GL_NO_ERROR: \
+		STR = "GL_NO_ERROR"; break; \
+	case GL_INVALID_ENUM: \
+		STR = "GL_INVALID_ENUM"; break; \
+	case GL_INVALID_VALUE: \
+		STR = "GL_INVALID_VALUE"; break; \
+	case GL_INVALID_OPERATION: \
+		STR = "GL_INVALID_OPERATION"; break; \
+	case GL_OUT_OF_MEMORY: \
+		STR = "GL_OUT_OF_MEMORY"; break; \
+	case GL_INVALID_FRAMEBUFFER_OPERATION: \
+		STR = "GL_INVALID_FRAMEBUFFER_OPERATION"; break; \
+	default: \
+		STR = "GL_UNKNOWN_ERROR"; break; \
+	}
+
 
 #if defined(DEBUG)
-#include "logx.h"
-#define CHECK_OGL \
+#	include <assert.h>
+#	include "logx.h"
+#	define CHECK_OGL \
 { \
-    GLenum err = glGetError(); \
-    if ( err != GL_NO_ERROR ) \
-    { \
-    switch( err ) \
-    { \
-        case GL_NO_ERROR: \
-            LOGI( "GL_NO_ERROR"); \
-            break; \
-        case GL_INVALID_ENUM: \
-            LOGI( "GL_INVALID_ENUM"); \
-            break; \
-        case GL_INVALID_VALUE: \
-            LOGI( "GL_INVALID_VALUE"); \
-            break; \
-        case GL_INVALID_OPERATION: \
-            LOGI( "GL_INVALID_OPERATION"); \
-            break; \
-        case GL_OUT_OF_MEMORY: \
-            LOGI( "GL_OUT_OF_MEMORY"); \
-            break; \
-        case GL_INVALID_FRAMEBUFFER_OPERATION: \
-            LOGI( "GL_INVALID_FRAMEBUFFER_OPERATION"); \
-            break; \
-} \
-LOGI( "OpenGL Error %s:%d (%x)", __FILE__, __LINE__, err ); \
-assert( err == GL_NO_ERROR ); \
-} \
+	GLenum err = glGetError(); \
+	if ( err != GL_NO_ERROR ) \
+	{ \
+		const char* s = 0; \
+		ERR2STR( err, s ); \
+		LOGE( "OpenGL Error %s:%d (%x)", __FILE__, __LINE__, err ); \
+		assert( err == GL_NO_ERROR ); \
+	} \
 }
-#else //!DEBUG
-#define CHECK_OGL
-#endif // DEBUG
+#else
+#	define CHECK_OGL
+#endif
 
 
 #if defined( OSX )
