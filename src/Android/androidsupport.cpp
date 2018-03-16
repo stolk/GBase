@@ -141,10 +141,13 @@ static void androidsupport_presentAssert( const char* condition, const char* fil
 	);
 	alertFatal( m );
 
-	const char* server = "45.79.100.67";	// stolk.org
-	assertreport_init( server, 2323 );
-	assertreport_send( m, strlen( m )+1 );
-	assertreport_exit();
+	if ( !strstr( condition, "[NOREP]" ) )
+	{
+		const char* server = "45.79.100.67";	// stolk.org
+		assertreport_init( server, 2323 );
+		assertreport_send( m, strlen( m )+1 );
+		assertreport_exit();
+	}
 
 	sleep( 2 );
 
@@ -248,10 +251,12 @@ int androidsupport_initDisplay( void )
 	eglGetConfigAttrib( display, config, EGL_NATIVE_VISUAL_ID, &format );
 	CHECKEGL( eglGetConfigAttrib )
 
-	ANativeWindow_setBuffersGeometry( engine->app->window, 0, 0, format );
+	const int32_t setbuffers_result = ANativeWindow_setBuffersGeometry( engine->app->window, 0, 0, format );
+	if ( setbuffers_result ) LOGE( "ANativeWindow_setBuffersGeometry() failed." );
 
 	surface = eglCreateWindowSurface( display, config, engine->app->window, NULL );
-	CHECKEGL( eglCreateWindowSurface )
+	const EGLint eglerr = eglGetError();
+	ASSERTM( eglerr==EGL_SUCCESS, "eglCreateWindowSurface() failed with %s [NOREP]", eglErrorString(eglerr) );
 
 	const EGLint contextAttribs[] =
 	{
