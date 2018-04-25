@@ -216,11 +216,13 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	int numbound=0;
 	numbound += bind_attribute( program, attributes, "position", ATTRIB_VERTEX );
 	numbound += bind_attribute( program, attributes, "surfacenormal", ATTRIB_NORMAL );
+	numbound += bind_attribute( program, attributes, "tangent", ATTRIB_TANGENT );
+	numbound += bind_attribute( program, attributes, "displacement", ATTRIB_DISPLACEMENT );
 	numbound += bind_attribute( program, attributes, "rgb", ATTRIB_RGB );
 	numbound += bind_attribute( program, attributes, "rgb0", ATTRIB_RGB0 );
 	numbound += bind_attribute( program, attributes, "rgb1", ATTRIB_RGB1 );
 	numbound += bind_attribute( program, attributes, "uv", ATTRIB_UV );
-	numbound += bind_attribute( program, attributes, "trf", ATTRIB_TRF );
+	numbound += bind_attribute( program, attributes, "trf",  ATTRIB_TRF );
 	// specific to imhotep pyramid builder.
 	numbound += bind_attribute( program, attributes, "limb", ATTRIB_LIMB );	// specific to crowdsim shader.
 	// specific to the little plane that could.
