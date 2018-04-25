@@ -35,6 +35,11 @@ const char* txdb_path=".";
 
 unsigned int txdb_bgcolour = 0x00000000;
 
+bool txdb_premultiply = false;
+
+bool txdb_mipmap = false;
+
+
 unsigned int txdb_load_from_memory( const char* name, const unsigned int* raw, int szw, int szh, bool compressed )
 {
 	unsigned int texture=0;
@@ -42,7 +47,8 @@ unsigned int txdb_load_from_memory( const char* name, const unsigned int* raw, i
 	glBindTexture(GL_TEXTURE_2D, texture);
 	CHECK_OGL
 
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	GLint minfilter = txdb_mipmap ? GL_LINEAR_MIPMAP_NEAREST : GL_LINEAR;
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );  // REQ'D FOR NON SQUARE TEXTURES!
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );  // REQ'D FOR NON SQUARE TEXTURES!
@@ -107,6 +113,27 @@ int txdb_load( const char* pkgname, const char* lname, const char** names, unsig
 			for ( int j=0; j<szw*szh; ++j )
 				if ( p[j] == 0x00000000 )
 					p[j] = txdb_bgcolour;
+			if ( txdb_premultiply )
+			{
+				for ( int j=0; j<szh*szw; ++j )
+				{
+					const uint32_t v = p[j];
+					const unsigned char r = ( (v>> 0) & 0xff );
+					const unsigned char g = ( (v>> 8) & 0xff );
+					const unsigned char b = ( (v>>16) & 0xff );
+					const unsigned char a = ( (v>>24) & 0xff );
+					const float alpha = a / 255.0f;
+					const unsigned char red = (unsigned char) roundf( alpha * r );
+					const unsigned char grn = (unsigned char) roundf( alpha * g );
+					const unsigned char blu = (unsigned char) roundf( alpha * b );
+					const uint32_t newv =
+						( red <<  0 ) |
+						( grn <<  8 ) |
+						( blu << 16 ) |
+						(   a << 24 );
+					p[j] = newv;
+				}
+			}
 			const bool compressed = false;
 			unsigned int texture = txdb_load_from_memory( name, (unsigned int*)p, szw, szh, compressed );
 			numLoaded += 1;
@@ -140,6 +167,7 @@ void txdb_use(const char* name)
     for ( int i=0; i<txdb_sz; ++i )
         if ( !strcmp( txdb_names[ i ], name ) )
         {
+            ASSERT( txdb_values[ i ] > 0 );
             glBindTexture( GL_TEXTURE_2D, txdb_values[ i ] );
             CHECK_OGL
             return;
@@ -160,4 +188,15 @@ void txdb_prt(void)
 	}
 	LOGI( "%s", s );
 }
+
+
+#if defined( USECOREPROFILE )
+void txdb_get_dim( const char* name, int* w, int* h )
+{
+	txdb_use( name );
+	const int miplevel=0;
+	glGetTexLevelParameteriv( GL_TEXTURE_2D, miplevel, GL_TEXTURE_WIDTH,  w );
+	glGetTexLevelParameteriv( GL_TEXTURE_2D, miplevel, GL_TEXTURE_HEIGHT, h );
+}
+#endif
 

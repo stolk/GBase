@@ -25,6 +25,9 @@ extern int txdb_load_compressed( const char** names, unsigned int* values, int c
 //! Use named texture.
 extern void txdb_use( const char* name );
 
+//! Lookup dimensions of texture.
+extern void txdb_get_dim( const char* name, int* w, int* h );
+
 //! Print the contents of the txdb.
 extern void txdb_prt( void );
 
@@ -33,5 +36,11 @@ extern const char* txdb_path;
 
 //! Workaround for Cairo / Inkscape screw up on colours with alpha 0.
 extern unsigned int txdb_bgcolour;
+
+//! Mode that pre-multiplies the alpha.
+extern bool txdb_premultiply;
+
+//! Mode that uses mipmapping.
+extern bool txdb_mipmap;
 
 #endif
