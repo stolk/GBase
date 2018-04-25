@@ -115,9 +115,9 @@
 	GLenum err = glGetError(); \
 	if ( err != GL_NO_ERROR ) \
 	{ \
-		const char* s = 0; \
-		ERR2STR( err, s ); \
-		LOGE( "OpenGL Error %s:%d (%x)", __FILE__, __LINE__, err ); \
+		const char* _s = 0; \
+		ERR2STR( err, _s ); \
+		LOGE( "OpenGL Error %s:%d (%x) %s", __FILE__, __LINE__, err, _s ); \
 		assert( err == GL_NO_ERROR ); \
 	} \
 }
