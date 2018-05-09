@@ -4,6 +4,14 @@
 #define STRINGIFY(X) #X
 #define TOSTRING(X) STRINGIFY(X)
 
+#if defined(__unix__)
+#	define WRNFMT "\033[33mWRN\033[0m "
+#	define ERRFMT "\033[31mERR\033[0m "
+#else
+#	define WRNFMT "WRN "
+#	define ERRFMT "ERR "
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -43,7 +51,7 @@ extern FILE* logx_file;
 
 #define LOGW(...) \
 { \
-  printf( "WRN " __VA_ARGS__ ); \
+  printf( WRNFMT __VA_ARGS__ ); \
   printf("\n"); \
   fflush( stdout ); \
   if ( logx_file ) { fprintf( logx_file, "WRN " __VA_ARGS__ ); fprintf( logx_file, "\n" ); fflush(logx_file); } \
@@ -51,7 +59,7 @@ extern FILE* logx_file;
 
 #define LOGE(...) \
 { \
-  printf( "ERR " __VA_ARGS__ ); \
+  printf( ERRFMT __VA_ARGS__ ); \
   printf("\n"); \
   fflush( stdout ); \
   if ( logx_file ) { fprintf( logx_file, "ERR " __VA_ARGS__ ); fprintf( logx_file, "\n" ); fflush(logx_file); } \
