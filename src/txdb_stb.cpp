@@ -30,6 +30,7 @@ static const int TXDB_MAX_SZ=96;
 static int txdb_sz=0;
 static const char* txdb_names[ TXDB_MAX_SZ ];
 static GLuint txdb_values[ TXDB_MAX_SZ ];
+static int txdb_imsz[ TXDB_MAX_SZ ][ 2 ];
 
 const char* txdb_path=".";
 
@@ -83,6 +84,8 @@ unsigned int txdb_load_from_memory( const char* name, const unsigned int* raw, i
 	ASSERT( txdb_sz < TXDB_MAX_SZ );
 	txdb_names[ txdb_sz ] = name;
 	txdb_values[ txdb_sz ] = texture;
+	txdb_imsz[ txdb_sz ][ 0 ] = szw;
+	txdb_imsz[ txdb_sz ][ 1 ] = szh;
 	txdb_sz += 1;
 
 	return texture;
@@ -190,13 +193,17 @@ void txdb_prt(void)
 }
 
 
-#if defined( USECOREPROFILE )
 void txdb_get_dim( const char* name, int* w, int* h )
 {
-	txdb_use( name );
-	const int miplevel=0;
-	glGetTexLevelParameteriv( GL_TEXTURE_2D, miplevel, GL_TEXTURE_WIDTH,  w );
-	glGetTexLevelParameteriv( GL_TEXTURE_2D, miplevel, GL_TEXTURE_HEIGHT, h );
+	for ( int i=0; i<txdb_sz; ++i )
+		if ( !strcmp( txdb_names[ i ], name ) )
+		{
+			*w = txdb_imsz[ i ][ 0 ];
+			*h = txdb_imsz[ i ][ 1 ];
+			return;
+		}
+	*w = 0;
+	*h = 0;
+	return;
 }
-#endif
 
