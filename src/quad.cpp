@@ -238,3 +238,44 @@ void quad_draw_dof( void )
 	CHECK_OGL
 }
 
+
+void quad_mk( unsigned int& vaobj, unsigned int& vbobj, float szx, float szy )
+{
+	glGenVertexArrays( 1, &vaobj );
+	glBindVertexArray( vaobj );
+	CHECK_OGL
+	glGenBuffers( 1, &vbobj );
+	glBindBuffer( GL_ARRAY_BUFFER,  vbobj );
+	CHECK_OGL
+	const float x0 = -szx;
+	const float x1 =  szx;
+	const float y0 = -szy;
+	const float y1 =  szy;
+	// six vertices, of 4 floats each (x,y,u,v)
+	float vertdata[ 6 * 4 ] =
+	{
+		x1,y1,1,1,	// x,y,u,v
+		x0,y1,0,1,
+		x0,y0,0,0,
+		x0,y0,0,0,
+		x1,y0,1,0,
+		x1,y1,1,1,
+	};
+	glBufferData( GL_ARRAY_BUFFER, sizeof(vertdata), vertdata, GL_STATIC_DRAW );
+	CHECK_OGL
+	const int stride = 4;
+	glVertexAttribPointer( ATTRIB_VERTEX, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*) 0 );
+	glVertexAttribPointer( ATTRIB_UV, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*) ( 2 * sizeof(float) ) );
+	glEnableVertexAttribArray( ATTRIB_VERTEX );
+	glEnableVertexAttribArray( ATTRIB_UV );
+	glBindVertexArray( 0 );
+}
+
+
+void quad_draw_array( unsigned int vaobj )
+{
+	glBindVertexArray( vaobj );
+	const int offset = 0;
+	glDrawArrays( GL_TRIANGLES, offset, 6 );
+}
+

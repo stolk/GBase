@@ -20,5 +20,9 @@ extern void quad_draw_dof( void );
 
 extern void quad_prepare( void );
 
+extern void quad_mk( unsigned int& vaobj, unsigned int& vbobj, float szx, float szy );
+
+extern void quad_draw_array( unsigned int vaobj );
+
 #endif
 
