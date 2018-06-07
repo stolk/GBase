@@ -82,8 +82,8 @@ int nfy_msg( const char* msg )
 
 int nfy_int( const char* msg, const char* key )
 {
-    const char* s = msg;
-    while ( *s!=0 && *s!=' ' && *s!='\n' ) ++s;
+	const char* s = msg;
+	while ( *s!=0 && *s!=' ' && *s!='\n' ) ++s;
 	s = strstr( s, key );
 	if ( s )
 	{
