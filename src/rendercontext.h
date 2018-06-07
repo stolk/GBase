@@ -60,7 +60,7 @@ const int ATTRIB_INTENS	= 1;
 const int ATTRIB_OPACIT = 1;
 
 // For prts shader
-const int ATTRIB_DISPLACEMENT = 1;
-const int ATTRIB_TANGENT      = 2;
+const int ATTRIB_DISPLACEMENT = 2;
+const int ATTRIB_TANGENT      = 3;
 
 #endif
