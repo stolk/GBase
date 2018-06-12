@@ -37,7 +37,7 @@ extern bool androidsupport_launchUrl( const char* url );
 extern void androidsupport_init( struct android_app* app );
 
 //! Initialize the display.
-extern int androidsupport_initDisplay( void );
+extern int androidsupport_initDisplay( bool withDepthBuffer=true );
 
 //! Terminate the display.
 extern void androidsupport_termDisplay( void );
