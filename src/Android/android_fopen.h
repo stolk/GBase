@@ -14,6 +14,7 @@ extern void android_fopen_set_asset_manager(AAssetManager* manager);
 
 extern FILE* android_fopen(const char* fname, const char* mode);
 extern fpos_t android_seek(void* cookie, fpos_t offset, int whence);
+extern void android_list_assets( const char* dirName );
 
 #ifdef __cplusplus
 }

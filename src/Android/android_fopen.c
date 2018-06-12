@@ -63,3 +63,27 @@ FILE* android_fopen(const char* fname, const char* mode)
 	return funopen(asset, android_read, android_write, android_seek, android_close);
 }
 
+
+void android_list_assets( const char* dirName )
+{
+    LOGI( "Contents of asset directory %s:", dirName );
+	AAssetDir* adir = AAssetManager_openDir( android_asset_manager, dirName );
+	if ( !adir )
+	{
+		LOGE( "AAssetManager_openDir( %p, %s ) failed.", android_asset_manager, dirName );
+	}
+	const char* name;
+	int num=0;
+	do
+	{
+		name = AAssetDir_getNextFileName( adir );
+		if ( name )
+		{
+			LOGI( "%s", name );
+			num += 1;
+		}
+	} while( name );
+	AAssetDir_close( adir );
+	LOGI( "dir %s contained %d entries.", dirName, num );
+}
+
