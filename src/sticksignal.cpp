@@ -34,7 +34,11 @@ static void onJoystick( const char* cmd )
 	if ( dx > -FLT_MAX && dy > -FLT_MAX )
 	{
 		joyx[nr] += dx;
+		joyx[nr] = joyx[nr] >  1 ?  1 : joyx[nr];
+		joyx[nr] = joyx[nr] < -1 ? -1 : joyx[nr];
 		joyy[nr] += dy;
+		joyy[nr] = joyy[nr] >  1 ?  1 : joyy[nr];
+		joyy[nr] = joyy[nr] < -1 ? -1 : joyy[nr];
 	}
 	else if ( x > -FLT_MAX && y > -FLT_MAX )
 	{
