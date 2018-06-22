@@ -4,6 +4,7 @@
 
 
 #include "nfy.h"
+#include "logx.h"
 
 
 #include <string.h>
@@ -34,6 +35,7 @@ bool nfy_obs_add( const char* lbl, notificationcallback_t cbk )
         nfy_lbl[ i ] = lbl;
         return true;
     }
+    LOGE( "We exceeded the max number of observers: %d", nfy_num_obs );
     return false;
 }
 

@@ -22,6 +22,7 @@ shdw.cpp
 tty.cpp
 txdb_stb.cpp
 wavdb.cpp
+sticksignal.cpp
 
 Android/android_native_app_glue.c
 Android/androidsupport.cpp

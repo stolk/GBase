@@ -31,19 +31,27 @@ static void onJoystick( const char* cmd )
 	const float dy = nfy_flt( cmd, "dy" );
 	const int   left = nfy_int( cmd, "left" );
 	const int   nr = left == 1 ? 0 : 1;
-	if ( dx > -FLT_MAX && dy > -FLT_MAX )
+	if ( dx > -FLT_MAX || dy > -FLT_MAX )
 	{
-		joyx[nr] += dx;
-		joyx[nr] = joyx[nr] >  1 ?  1 : joyx[nr];
-		joyx[nr] = joyx[nr] < -1 ? -1 : joyx[nr];
-		joyy[nr] += dy;
-		joyy[nr] = joyy[nr] >  1 ?  1 : joyy[nr];
-		joyy[nr] = joyy[nr] < -1 ? -1 : joyy[nr];
+		if ( dx > -FLT_MAX )
+		{
+			joyx[nr] += dx;
+			joyx[nr] = joyx[nr] >  1 ?  1 : joyx[nr];
+			joyx[nr] = joyx[nr] < -1 ? -1 : joyx[nr];
+		}
+		if ( dy > -FLT_MAX )
+		{
+			joyy[nr] += dy;
+			joyy[nr] = joyy[nr] >  1 ?  1 : joyy[nr];
+			joyy[nr] = joyy[nr] < -1 ? -1 : joyy[nr];
+		}
 	}
-	else if ( x > -FLT_MAX && y > -FLT_MAX )
+	else if ( x > -FLT_MAX || y > -FLT_MAX )
 	{
-		joyx[nr] = x;
-		joyy[nr] = y;
+		if ( x > -FLT_MAX )
+			joyx[nr] = x;
+		if ( y > -FLT_MAX )
+			joyy[nr] = y;
 	}
 }
 
