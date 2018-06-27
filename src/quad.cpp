@@ -238,7 +238,7 @@ void quad_draw_dof( void )
 	CHECK_OGL
 }
 
-
+#if !defined(USEES2)
 void quad_mk( unsigned int& vaobj, unsigned int& vbobj, float szx, float szy )
 {
 	glGenVertexArrays( 1, &vaobj );
@@ -278,4 +278,5 @@ void quad_draw_array( unsigned int vaobj )
 	const int offset = 0;
 	glDrawArrays( GL_TRIANGLES, offset, 6 );
 }
+#endif
 
