@@ -31,7 +31,7 @@ Android/android_fopen.c
 
 target_include_directories(gbase PRIVATE
 	./
-	$ENV{HOME}/src/opende/include/
+	$ENV{HOME}/src/ode-0.13.1/include/
 	$ENV{HOME}/src/stb/
 )
 
