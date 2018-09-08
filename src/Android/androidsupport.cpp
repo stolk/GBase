@@ -137,7 +137,7 @@ static void androidsupport_presentAssert( const char* condition, const char* fil
 	snprintf
 	(
 		m, sizeof(m),
-		"ASSERT FAILED %s v%s: %s (%s:%d)", TOSTRING(LOGTAG), TOSTRING(APPVER), condition, file, line
+		"ASSERT FAILED %s v%s(android): %s (%s:%d)", TOSTRING(LOGTAG), TOSTRING(APPVER), condition, file, line
 	);
 	alertFatal( m );
 
