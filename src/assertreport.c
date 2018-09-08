@@ -69,7 +69,7 @@ int assertreport_init( const char* host, int portnr )
 
 	struct hostent *he = gethostbyname( host );
 	if ( !he ) { perror("gethostbyname"); return 0; }
-	struct in_addr ip_addr = *(struct in_addr *)(he->h_addr);
+	struct in_addr ip_addr = *(struct in_addr *)(he->h_addr_list[0]);
 	char *ipnr = inet_ntoa( ip_addr );
 
 	server_addr.sin_family	= AF_INET;
