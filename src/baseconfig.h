@@ -18,20 +18,24 @@
 
 #		define isnanf isnan
 
-#		define __BASE_FILE__ __FILE__
+#		if !defined( __clang__ )
+#			define __BASE_FILE__ __FILE__
 
-#		undef NDEBUG // We want asserts please.
+#			undef NDEBUG // We want asserts please.
 
-#		pragma warning( disable : 4305 )	// truncation from 'double' to 'const float'
-#		pragma warning( disable : 4244 )	// truncation from 'float ' to 'int', possible loss of data
-#		pragma warning( disable : 4800 )	// forcing value to bool 'true' or 'false' (performance warning)
-#		pragma warning( disable : 4996 )	// Consider using fopen_s instead.
+#			pragma warning( disable : 4305 )	// truncation from 'double' to 'const float'
+#			pragma warning( disable : 4244 )	// truncation from 'float ' to 'int', possible loss of data
+#			pragma warning( disable : 4800 )	// forcing value to bool 'true' or 'false' (performance warning)
+#			pragma warning( disable : 4996 )	// Consider using fopen_s instead.
 
-#		define _CRT_SECURE_NO_WARNINGS
+#			define __restrict__ __restrict
+#			define __inline__ __inline
+#			define aligned_alloc( AL, SZ ) malloc( SZ )
 
-#		define __restrict__ __restrict
-#		define __inline__ __inline
-#		define aligned_alloc( AL, SZ ) malloc( SZ )
+#			define _CRT_SECURE_NO_WARNINGS
+#		endif
+
+
 #	endif // MSWIN
 
 
