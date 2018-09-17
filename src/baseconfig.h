@@ -55,7 +55,7 @@
 #		define EMBEDGEOMS
 #	endif
 
-#	if defined( PLAY ) || defined( IPHN )
+#	if defined( ANDROID ) || defined( IPHN )
 #		define USETOUCH
 #	endif
 
@@ -65,7 +65,7 @@
 
 
 // We use the GL DEBUG PROC extension on XWin and MSWin.
-#	if !defined( OSX ) && !defined( IPHN ) && !defined( APTV ) && !defined( PLAY ) && !defined( JS )
+#	if !defined( OSX ) && !defined( IPHN ) && !defined( APTV ) && !defined( ANDROID ) && !defined( JS )
 #		define USEGLDEBUGPROC
 #	endif
 
