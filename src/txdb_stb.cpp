@@ -15,6 +15,7 @@
 
 #include <math.h>
 #include <stdio.h>	// for snprintf()
+#include <stdint.h>	// for uint32_t
 #include <sys/types.h>	// req'd by VisualC for off_t
 #include <string.h>
 #include <assert.h>
