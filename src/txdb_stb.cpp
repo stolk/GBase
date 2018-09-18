@@ -98,7 +98,7 @@ int txdb_load( const char* pkgname, const char* lname, const char** names, unsig
 	for ( int i=0; i<count; ++i )
 	{
 		const char* name = names[ i ];
-		char fname[128];
+		char fname[256];
 		snprintf(fname, sizeof(fname), "%s/%s/%s.png", txdb_path, lname, name);
 		int szw=0;
 		int szh=0;
