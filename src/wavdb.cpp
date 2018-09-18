@@ -12,6 +12,7 @@
 #	define fopen android_fopen
 #endif
 
+#include "baseconfig.h"
 #include "logx.h"
 
 static const int WAVDB_MAX_SZ=64;

@@ -9,6 +9,39 @@
 #	include <time.h>
 #endif
 
+#if defined( MSWIN )
+#	define BILLION                             (1E9)
+#	define CLOCK_MONOTONIC	-1
+#	include <Windows.h>
+	struct timespec { long tv_sec; long tv_nsec; };
+
+	static BOOL g_first_time = 1;
+	static LARGE_INTEGER g_counts_per_sec;
+
+	int clock_gettime(int dummy, struct timespec *ct)
+	{
+		LARGE_INTEGER count;
+
+		if (g_first_time)
+		{
+			g_first_time = 0;
+
+			if (0 == QueryPerformanceFrequency(&g_counts_per_sec))
+			{
+				g_counts_per_sec.QuadPart = 0;
+			}
+		}
+		if ((NULL == ct) || (g_counts_per_sec.QuadPart <= 0) || (0 == QueryPerformanceCounter(&count))) 
+		{
+			return -1;
+		}
+
+		ct->tv_sec = count.QuadPart / g_counts_per_sec.QuadPart;
+		ct->tv_nsec = ((count.QuadPart % g_counts_per_sec.QuadPart) * BILLION) / g_counts_per_sec.QuadPart;
+		return 0;
+	}
+#endif
+
 
 double elapsed_ms_since_last_call( void )
 {
@@ -29,7 +62,7 @@ double elapsed_ms_since_last_call( void )
 	delt = delt * tbi.numer;
 	// now we have the delta in nanoseconds.
 	return delt / 1000000.0;
-#elif defined( ANDROID ) || defined( XWIN )
+#elif defined( ANDROID ) || defined( XWIN ) || defined( MSWIN )
 	static struct timespec prev;
 	struct timespec curr;
 	if ( virgin )
@@ -69,7 +102,7 @@ double elapsed_ms_since_start( void )
 	const uint64_t diff = c1-c0;
 	const double ms = diff / 1000000.0;
 	return ms;
-#elif defined( XWIN ) || defined( ANDROID ) || defined( JS )
+#elif defined( XWIN ) || defined( ANDROID ) || defined( JS ) || defined( MSWIN )
 	static struct timespec res0;
 	struct timespec res1;
 	if ( virgin )
