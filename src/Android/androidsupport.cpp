@@ -70,7 +70,23 @@ androidsupport_engine_t androidsupport_engine;
 #define CHECKEGL( F ) \
 	{ \
 		const EGLint eglerr = eglGetError(); \
-		ASSERTM( eglerr==EGL_SUCCESS, #F " failed with %s", eglErrorString(eglerr) ); \
+		ASSERTM \
+		( \
+			eglerr==EGL_SUCCESS, \
+			#F " failed with %s", \
+			eglErrorString(eglerr) \
+		); \
+	}
+
+#define CHECKEGLV( F ) \
+	{ \
+		const EGLint eglerr = eglGetError(); \
+		ASSERTM \
+		( \
+			eglerr==EGL_SUCCESS, \
+			#F " failed with %s (VENDOR:%s VERSION:%s)", \
+			eglErrorString(eglerr), eglQueryString(display, EGL_VENDOR), eglQueryString(display, EGL_VERSION) \
+		); \
 	}
 
 
@@ -240,7 +256,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 	{
 		LOGE( "Cannot get EGL configuration. Trying fallback (16bit colour)..." );
 		eglChooseConfig( display, attribs_fallback, &config, 1, &numConfigs);
-		CHECKEGL( eglChooseConfig )
+		CHECKEGLV( eglChooseConfig )
 		ASSERT( numConfigs > 0 );
 	}
 
@@ -249,7 +265,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 	 * As soon as we picked a EGLConfig, we can safely reconfigure the
 	 * ANativeWindow buffers to match, using EGL_NATIVE_VISUAL_ID. */
 	eglGetConfigAttrib( display, config, EGL_NATIVE_VISUAL_ID, &format );
-	CHECKEGL( eglGetConfigAttrib )
+	CHECKEGLV( eglGetConfigAttrib )
 
 	const int32_t setbuffers_result = ANativeWindow_setBuffersGeometry( engine->app->window, 0, 0, format );
 	if ( setbuffers_result ) LOGE( "ANativeWindow_setBuffersGeometry() failed." );
@@ -268,10 +284,10 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 		EGL_NONE
 	};
 	context = eglCreateContext( display, config, NULL, contextAttribs );
-	CHECKEGL( eglCreateContext )
+	CHECKEGLV( eglCreateContext )
 
 	const EGLBoolean madecur = eglMakeCurrent(display, surface, surface, context);
-	CHECKEGL( elgMakeCurrent )
+	CHECKEGLV( elgMakeCurrent )
 	ASSERTM( madecur != EGL_FALSE, "format=%d, numConfigs=%d", format, numConfigs );
 
 	eglQuerySurface(display, surface, EGL_WIDTH,  &w);
