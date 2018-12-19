@@ -112,7 +112,7 @@ void dbd_vector( const vec3_t& fr, const vec3_t& to )
 }
 
 
-void dbd_draw_edge( const rendercontext_t& rc )
+int dbd_draw_edge( const rendercontext_t& rc )
 {
 	static int mcvpUniform = glpr_uniform( "modelcamviewprojmat" );
 	if ( numv )
@@ -154,6 +154,7 @@ void dbd_draw_edge( const rendercontext_t& rc )
 		glDeleteBuffers( 1, &vbo );
 		CHECK_OGL
 	}
+	return numv;
 }
 
 

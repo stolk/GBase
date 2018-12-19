@@ -16,7 +16,7 @@ extern void dbd_box( const vec3_t& p, const vec3_t& x, const vec3_t& y, const ve
 
 extern void dbd_box( const mat44_t& m );
 
-extern void dbd_draw_edge( const rendercontext_t& rc );
+extern int  dbd_draw_edge( const rendercontext_t& rc );
 
 extern void dbd_crosshairs( const vec3_t& p, float sz );
 
