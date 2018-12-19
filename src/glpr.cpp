@@ -234,6 +234,8 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	numbound += bind_attribute( program, attributes, "intensity", ATTRIB_INTENS );
 	// specific to font rendering.
 	numbound += bind_attribute( program, attributes, "opacity", ATTRIB_OPACIT );
+	// specific to fragger
+	numbound += bind_attribute( program, attributes, "hue", ATTRIB_HUE );
 
 	//LOGI( "bound %d attributes for shader %s", numbound, name );
 	(void)numbound;
