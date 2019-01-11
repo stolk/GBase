@@ -64,6 +64,6 @@ const int ATTRIB_DISPLACEMENT = 2;
 const int ATTRIB_TANGENT      = 3;
 
 // For wall shader
-const int ATTRIB_HUE	= 2;
+const int ATTRIB_HUE	= 3;
 
 #endif
