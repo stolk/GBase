@@ -72,6 +72,57 @@ void dbd_box( const mat44_t& m )
 }
 
 
+void dbd_circlez( const mat44_t& m )
+{
+	const int nump = 12;
+	vec4_t pts[ nump ];
+	for ( int i=0; i<nump; ++i )
+	{
+		const float a = M_PI * 2.0f * i / (nump-1.0f);
+		pts[ i ] = vec4_t( cosf(a), sinf(a), 0.0f, 1.0f );
+	}
+	for ( int i=0; i<nump-1; ++i )
+	{
+		const vec4_t xp0 = m * pts[ i+0 ];
+		const vec4_t xp1 = m * pts[ i+1 ];
+		dbd_line( vec3_t(xp0[0],xp0[1],xp0[2]), vec3_t(xp1[0],xp1[1],xp1[2]) );
+	}
+}
+
+
+void dbd_sphere( const vec3_t pos, float r )
+{
+	mat44_t m;
+
+	m.setRows
+	(
+		vec3_t( r,0,0 ),
+		vec3_t( 0,r,0 ),
+		vec3_t( 0,0,r ),
+		pos
+	);
+	dbd_circlez( m );
+
+	m.setRows
+	(
+		vec3_t( r,0,0 ),
+		vec3_t( 0,0,r ),
+		vec3_t( 0,r,0 ),
+		pos
+	);
+	dbd_circlez( m );
+
+	m.setRows
+	(
+		vec3_t( 0,r,0 ),
+		vec3_t( 0,0,r ),
+		vec3_t( r,0,0 ),
+		pos
+	);
+	dbd_circlez( m );
+}
+
+
 void dbd_crosshairs( const vec3_t& p, float sz )
 {
 	dbd_line( p-vec3_t(sz,0,0), p+vec3_t(sz,0,0) );
