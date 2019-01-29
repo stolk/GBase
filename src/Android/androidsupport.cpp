@@ -271,20 +271,33 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 	if ( setbuffers_result ) LOGE( "ANativeWindow_setBuffersGeometry() failed." );
 
 	surface = eglCreateWindowSurface( display, config, engine->app->window, NULL );
-	const EGLint eglerr = eglGetError();
+	EGLint eglerr = eglGetError();
 	ASSERTM( eglerr==EGL_SUCCESS, "eglCreateWindowSurface() failed with %s [NOREP]", eglErrorString(eglerr) );
 
-	const EGLint contextAttribs[] =
+	const EGLint contextAttribsES3[] =
 	{
-#if defined( USEES3 )
 		EGL_CONTEXT_CLIENT_VERSION, 3,
-#elif defined( USEES2 )
-		EGL_CONTEXT_CLIENT_VERSION, 2,
-#endif
 		EGL_NONE
 	};
-	context = eglCreateContext( display, config, NULL, contextAttribs );
+	const EGLint contextAttribsES2[] =
+	{
+		EGL_CONTEXT_CLIENT_VERSION, 2,
+		EGL_NONE
+	};
+#if defined(USEES2)
+	context = eglCreateContext( display, config, NULL, contextAttribsES2 );
 	CHECKEGLV( eglCreateContext )
+#else
+	context = eglCreateContext( display, config, NULL, contextAttribsES3 );
+	eglerr = eglGetError();
+	if ( eglerr != EGL_SUCCESS )
+	{
+		context = eglCreateContext( display, config, NULL, contextAttribsES2 );
+		CHECKEGLV( eglCreateContext );
+		LOGE( "Couldn't create ES3 context, can only create ES2 context: this device is incompatible!" );
+		ASSERTM( eglerr == EGL_SUCCESS, "This device (%s) does not support OpenGL-ES3. context=%p", context );
+	}
+#endif
 
 	const EGLBoolean madecur = eglMakeCurrent(display, surface, surface, context);
 	CHECKEGLV( elgMakeCurrent )
