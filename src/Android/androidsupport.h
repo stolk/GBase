@@ -42,3 +42,9 @@ extern int androidsupport_initDisplay( bool withDepthBuffer=true );
 //! Terminate the display.
 extern void androidsupport_termDisplay( void );
 
+//! The name of the manufacturer.
+extern char androidsupport_manufacturer[80];
+
+//! The name of the device model.
+extern char androidsupport_model[80];
+

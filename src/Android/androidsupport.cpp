@@ -93,6 +93,10 @@ androidsupport_engine_t androidsupport_engine;
 bool androidsupport_assertDialogDismissed=false;
 
 
+char androidsupport_manufacturer[80];
+char androidsupport_model[80];
+
+
 
 bool androidsupport_launchUrl( const char* url )
 {
@@ -153,7 +157,10 @@ static void androidsupport_presentAssert( const char* condition, const char* fil
 	snprintf
 	(
 		m, sizeof(m),
-		"ASSERT FAILED %s v%s(android): %s (%s:%d)", TOSTRING(LOGTAG), TOSTRING(APPVER), condition, file, line
+		"ASSERT FAILED %s v%s(%s/%s): %s (%s:%d)",
+		TOSTRING(LOGTAG), TOSTRING(APPVER),
+		androidsupport_manufacturer, androidsupport_model,
+	       	condition, file, line
 	);
 	alertFatal( m );
 
@@ -216,9 +223,9 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 	const EGLint attribs_fallback[] = {
 		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
 		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-		EGL_DEPTH_SIZE, 16,
+		EGL_DEPTH_SIZE, withDepthBuffer ? 16 : 0,
 		EGL_BLUE_SIZE, 5,
-		EGL_GREEN_SIZE, 6,
+		EGL_GREEN_SIZE, 5,
 		EGL_RED_SIZE, 5,
 		EGL_NONE
 	};
@@ -295,7 +302,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 		context = eglCreateContext( display, config, NULL, contextAttribsES2 );
 		CHECKEGLV( eglCreateContext );
 		LOGE( "Couldn't create ES3 context, can only create ES2 context: this device is incompatible!" );
-		ASSERTM( eglerr == EGL_SUCCESS, "This device (%s) does not support OpenGL-ES3. context=%p", context );
+		ASSERTM( eglerr == EGL_SUCCESS, "This device does not support OpenGL-ES3. context=%p", context );
 	}
 #endif
 
