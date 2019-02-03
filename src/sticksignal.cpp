@@ -75,7 +75,7 @@ void sticksignal_sample( int nr, float* stickx, float* sticky )
 {
 	if ( nr < NUMSTICKS )
 	{
-		ASSERT( sampleidx[nr] < numsteps );
+		ASSERTM( sampleidx[nr] < numsteps, "sampleidx[%d]=%d numsteps=%d", nr, sampleidx[nr], numsteps );
 		*stickx = prvjoyx[nr] + ( sampleidx[nr] + 1 ) * predict_dx[nr];
 		*sticky = prvjoyy[nr] + ( sampleidx[nr] + 1 ) * predict_dy[nr];
 		sampleidx[nr]++;
