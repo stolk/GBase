@@ -148,34 +148,48 @@ static bool alertFatal( const char* msg )
 
 static void androidsupport_presentAssert( const char* condition, const char* file, int line )
 {
-	LOGI( "ASSERT FAILED FAILED FAILED!" );
-	LOGI( "COND %s", condition );
-	LOGI( "FILE %s", file );
-	LOGI( "LINE %d", line );
+	LOGE( "ASSERT FAILED FAILED FAILED!" );
+	LOGE( "COND %s", condition );
+	LOGE( "FILE %s", file );
+	LOGE( "LINE %d", line );
 
-	char m[512];
+	char logm[1024];	// message for the log.
+	char usrm[1024];	// message for the user.
 	snprintf
 	(
-		m, sizeof(m),
+		logm, sizeof(logm),
 		"ASSERT FAILED %s v%s(%s/%s): %s (%s:%d)",
 		TOSTRING(LOGTAG), TOSTRING(APPVER),
 		androidsupport_manufacturer, androidsupport_model,
 	       	condition, file, line
 	);
-	alertFatal( m );
+	snprintf
+	(
+		usrm, sizeof(usrm),
+		"FATAL ERROR:\n"
+		"%s (%s:%d)\n"
+		"%s v%s",
+		condition, file, line,
+		TOSTRING(LOGTAG), TOSTRING(APPVER)
+	);
 
 	if ( !strstr( condition, "[NOREP]" ) )
 	{
 		const char* server = "45.79.100.67";	// stolk.org
 		assertreport_init( server, 2323 );
-		assertreport_send( m, strlen( m )+1 );
+		assertreport_send( logm, strlen( logm )+1 );
 		assertreport_exit();
 	}
 
-	sleep( 2 );
+	alertFatal( usrm );
 
-	int* p = 0;
-	*p = line;
+	// Wait a maximum of 16 seconds for user to acknowledge the assertion failure.
+	// After which we should terminate regardless.
+	for ( int i=0; i<16 && !androidsupport_assertDialogDismissed; ++i )
+		sleep( 1 );
+
+	// This will terminate the process.
+	abort();
 }
 
 
