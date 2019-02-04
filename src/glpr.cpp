@@ -10,20 +10,25 @@
 
 
 #define MAXUNIFORMS	512
-static int		glpr_unif[ MAXUNIFORMS ];	// uniform values.
-static const char*	glpr_name[ MAXUNIFORMS ];	// uniform names.
-static unsigned int	glpr_prog[ MAXUNIFORMS ];	// programs associated with uniforms.
-static int		glpr_numu;			// nr of uniforms.
+static int		glpr_unif[ MAXUNIFORMS ];	//!< uniform values.
+static const char*	glpr_name[ MAXUNIFORMS ];	//!< uniform names.
+static unsigned int	glpr_prog[ MAXUNIFORMS ];	//!< programs associated with uniforms.
+static int		glpr_numu;			//!< nr of uniforms.
 
 // To avoid name-clashes between different programs, we use a start index where we search for a uniform name.
 static int		glpr_searchindex;
 static int		glpr_usedprogram;
+
+char*			glpr_last_compile_log;		//!< the last GLSL compile log.
+char*			glpr_last_link_log;		//!< the last GLSL link log.
 
 
 void glpr_init( void )
 {
 	glpr_numu = 0;
 	glpr_usedprogram = -1;
+	glpr_last_compile_log = "";
+	glpr_last_link_log = "";
 	for ( int i=0; i<MAXUNIFORMS; ++i )
 	{
 		glpr_unif[ i ] = -1;
@@ -105,7 +110,7 @@ static bool glpr_compile( GLuint* shader, GLenum type, const GLchar* source )
 		GLchar *log = (GLchar *)malloc( logLength );
 		glGetShaderInfoLog( *shader, logLength, &logLength, log );
 		LOGI( "Shader compile log:\n%s", log );
-		free( log );
+		glpr_last_compile_log = log;
 	}
 	GLint status=0;
 	glGetShaderiv( *shader, GL_COMPILE_STATUS, &status );
@@ -133,6 +138,7 @@ static bool glpr_link( GLuint prog )
 		glGetProgramInfoLog( prog, sizeof( log ), &logLength, log );
 		CHECK_OGL
 		LOGE( "Program link log(sz=%d):\n%s", logLength, log );
+		glpr_last_link_log = log;
 	}
 	GLint status;
 	glGetProgramiv( prog, GL_LINK_STATUS, &status );

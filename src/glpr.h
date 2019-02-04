@@ -22,4 +22,7 @@ extern int  glpr_uniform( const char* nm );
 
 extern void glpr_use( unsigned int prog );
 
+extern char*	glpr_last_compile_log;		//!< the last GLSL compile log.
+extern char*	glpr_last_link_log;		//!< the last GLSL link log.
+
 #endif
