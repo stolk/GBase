@@ -66,4 +66,7 @@ const int ATTRIB_TANGENT      = 3;
 // For wall shader
 const int ATTRIB_HUE	= 3;
 
+// For clouds shader (Armor)
+const int ATTRIB_UVSHIFT = 4;
+
 #endif
