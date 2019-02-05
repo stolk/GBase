@@ -49,7 +49,7 @@ bool shdw_createFramebuffer( bool supportsDepthTexture )
 	CHECK_OGL
 	if ( !supportsDepthTexture )
 	{
-#if defined( MSWIN ) || defined( MAC ) || defined( JS ) || defined( IPHN ) || defined( APTV )
+#if defined( MSWIN ) || defined( MAC ) || defined( JS ) || defined( IPHN ) || defined( APTV ) || ( defined( USEES2 ) && defined( XWIN ) )
 		LOGE( "No depth texture support." );
 		assert( supportsDepthTexture );
 #elif defined( XWIN ) || defined( OCVR )
