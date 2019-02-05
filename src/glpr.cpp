@@ -19,8 +19,8 @@ static int		glpr_numu;			//!< nr of uniforms.
 static int		glpr_searchindex;
 static int		glpr_usedprogram;
 
-char*			glpr_last_compile_log;		//!< the last GLSL compile log.
-char*			glpr_last_link_log;		//!< the last GLSL link log.
+const char*		glpr_last_compile_log;		//!< the last GLSL compile log.
+const char*		glpr_last_link_log;		//!< the last GLSL link log.
 
 
 void glpr_init( void )
@@ -242,6 +242,8 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	numbound += bind_attribute( program, attributes, "opacity", ATTRIB_OPACIT );
 	// specific to fragger
 	numbound += bind_attribute( program, attributes, "hue", ATTRIB_HUE );
+	// specific to FTT
+	numbound += bind_attribute( program, attributes, "uvshift", ATTRIB_UVSHIFT );
 
 	//LOGI( "bound %d attributes for shader %s", numbound, name );
 	(void)numbound;
