@@ -38,16 +38,11 @@
 
 #	endif // MSWIN
 
-
 // Not all platforms garantee Vertex Array Objects.
-#	if defined( ANDROID ) || defined( RASP ) || defined( JS )
+#	if defined( USEES2 ) && !defined( IPHN )
 #		undef USE_VAO
 #	else
-#		define USE_VAO // On iPhone or android simulator:
-#	endif
-
-#	if defined( USEES3 )
-#		define USE_VAO	// Android OpenGL ES3.x does have them.
+#		define USE_VAO
 #	endif
 
 
