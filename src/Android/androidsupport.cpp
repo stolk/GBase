@@ -146,6 +146,30 @@ static bool alertFatal( const char* msg )
 }
 
 
+//! Helper function to open a java-side dialog window with a message.
+bool androidsupport_reportFailedLaunch( const char* msg )
+{
+	if ( !androidsupport_engine.app ) return false;
+
+	JNIEnv* env = androidsupport_engine.app->appThreadEnv;
+	if ( !env ) return false;
+
+	jstring jniText = env->NewStringUTF( msg );
+	EXCEPTION_RETURN( env );
+
+	jclass thisClass = env->GetObjectClass( androidsupport_engine.app->appThreadThis );
+	EXCEPTION_RETURN( env );
+
+	jmethodID alertMethod = env->GetMethodID( thisClass, "reportFailedLaunch", "(Ljava/lang/String;)V" );
+	EXCEPTION_RETURN( env );
+
+	env->CallVoidMethod( androidsupport_engine.app->appThreadThis, alertMethod, jniText );
+	EXCEPTION_RETURN( env );
+
+	return true;
+}
+
+
 static void androidsupport_presentAssert( const char* condition, const char* file, int line )
 {
 	LOGE( "ASSERT FAILED FAILED FAILED!" );
@@ -278,7 +302,8 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 		LOGE( "Cannot get EGL configuration. Trying fallback (16bit colour)..." );
 		eglChooseConfig( display, attribs_fallback, &config, 1, &numConfigs);
 		CHECKEGLV( eglChooseConfig )
-		ASSERT( numConfigs > 0 );
+		if ( numConfigs < 0 )
+			return -1;
 	}
 
 	/* EGL_NATIVE_VISUAL_ID is an attribute of the EGLConfig that is
@@ -316,7 +341,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 		context = eglCreateContext( display, config, NULL, contextAttribsES2 );
 		CHECKEGLV( eglCreateContext );
 		LOGE( "Couldn't create ES3 context, can only create ES2 context: this device is incompatible!" );
-		ASSERTM( eglerr == EGL_SUCCESS, "This device does not support OpenGL-ES3. context=%p", context );
+		return -1;
 	}
 #endif
 
@@ -332,6 +357,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 	engine->surface = surface;
 	engine->width = w;
 	engine->height = h;
+	engine->animating = 1;
 
 	LOGI("Created surface of size %dx%d", w, h);
 

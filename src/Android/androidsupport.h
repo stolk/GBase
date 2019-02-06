@@ -42,6 +42,9 @@ extern int androidsupport_initDisplay( bool withDepthBuffer=true );
 //! Terminate the display.
 extern void androidsupport_termDisplay( void );
 
+//! Report (java-side) that we failed to launch.
+extern bool androidsupport_reportFailedLaunch( const char* msg );
+
 //! The name of the manufacturer.
 extern char androidsupport_manufacturer[80];
 
