@@ -1,3 +1,4 @@
+#include "androidsupport.h"
 
 #include <jni.h>
 #include <errno.h>
@@ -40,17 +41,6 @@ static inline const char* eglErrorString( EGLint error )
 	return "Unknown EGL error";
 }
 
-
-typedef struct
-{
-	struct android_app* app;
-	int animating;
-	EGLDisplay display;
-	EGLSurface surface;
-	EGLContext context;
-	int32_t width;
-	int32_t height;
-} androidsupport_engine_t;
 
 
 androidsupport_engine_t androidsupport_engine;
@@ -318,7 +308,8 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 
 	surface = eglCreateWindowSurface( display, config, engine->app->window, NULL );
 	EGLint eglerr = eglGetError();
-	ASSERTM( eglerr==EGL_SUCCESS, "eglCreateWindowSurface() failed with %s [NOREP]", eglErrorString(eglerr) );
+	if ( eglerr == EGL_BAD_ALLOC ) return -2;
+	ASSERTM( eglerr==EGL_SUCCESS, "eglCreateWindowSurface() failed with %s", eglErrorString(eglerr) );
 
 	const EGLint contextAttribsES3[] =
 	{
@@ -332,7 +323,12 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 	};
 #if defined(USEES2)
 	context = eglCreateContext( display, config, NULL, contextAttribsES2 );
-	CHECKEGLV( eglCreateContext )
+	eglerr = eglGetError();
+	if ( eglerr != EGL_SUCCESS )
+	{
+		LOGE( "Couldn't create ES2 context: this device is incompatible!" );
+		return -1;
+	}
 #else
 	context = eglCreateContext( display, config, NULL, contextAttribsES3 );
 	eglerr = eglGetError();
@@ -357,7 +353,6 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 	engine->surface = surface;
 	engine->width = w;
 	engine->height = h;
-	engine->animating = 1;
 
 	LOGI("Created surface of size %dx%d", w, h);
 
@@ -384,7 +379,6 @@ void androidsupport_termDisplay( void )
 		}
 		eglTerminate( engine->display );
 	}
-	engine->animating = 0;
 	engine->display = EGL_NO_DISPLAY;
 	engine->context = EGL_NO_CONTEXT;
 	engine->surface = EGL_NO_SURFACE;

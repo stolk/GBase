@@ -16,6 +16,7 @@ typedef struct
 {
 	struct android_app* app;
 	int animating;
+	int ready;
 	EGLDisplay display;
 	EGLSurface surface;
 	EGLContext context;
