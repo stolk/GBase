@@ -18,6 +18,7 @@ static int		glpr_numu;			//!< nr of uniforms.
 // To avoid name-clashes between different programs, we use a start index where we search for a uniform name.
 static int		glpr_searchindex;
 static int		glpr_usedprogram;
+static int 		glpr_programCount;
 
 const char*		glpr_last_compile_log;		//!< the last GLSL compile log.
 const char*		glpr_last_link_log;		//!< the last GLSL link log.
@@ -27,6 +28,7 @@ void glpr_init( void )
 {
 	glpr_numu = 0;
 	glpr_usedprogram = -1;
+	glpr_programCount = 0;
 	glpr_last_compile_log = "";
 	glpr_last_link_log = "";
 	for ( int i=0; i<MAXUNIFORMS; ++i )
@@ -76,7 +78,7 @@ int glpr_uniform( const char* nm )
 		if ( !strcmp( nm, glpr_name[ i ] ) )
 			return glpr_unif[ i ];
 	}
-	ASSERTM( 0, "uniform '%s' for program %d not found. Searched [%d,%d).", nm, glpr_usedprogram, glpr_searchindex, glpr_numu );
+	ASSERTM( 0, "uniform '%s' for program %d not found. Searched [%d,%d). Program Count: %d", nm, glpr_usedprogram, glpr_searchindex, glpr_numu, glpr_programCount );
 	return -1;
 }
 
@@ -95,15 +97,15 @@ int glpr_add( const char* nm, unsigned int program )
 
 static bool glpr_compile( GLuint* shader, GLenum type, const GLchar* source )
 {
-	if ( !source )
-	{
-		LOGE( "Failed to load vertex shader" );
-		return false;
-	}
+	ASSERT( source );
 	*shader = glCreateShader(type);
+	CHECK_OGL
+	ASSERT( *shader > 0 );
 	glShaderSource( *shader, 1, &source, NULL );
+	CHECK_OGL
 	glCompileShader( *shader );
-	GLint logLength;
+	CHECK_OGL
+	GLint logLength=0;
 	glGetShaderiv( *shader, GL_INFO_LOG_LENGTH, &logLength );
 	if ( logLength > 1 )
 	{
@@ -114,6 +116,7 @@ static bool glpr_compile( GLuint* shader, GLenum type, const GLchar* source )
 	}
 	GLint status=0;
 	glGetShaderiv( *shader, GL_COMPILE_STATUS, &status );
+	CHECK_OGL
 	if ( status == 0 )
 	{
 		glDeleteShader( *shader );
@@ -133,14 +136,12 @@ static bool glpr_link( GLuint prog )
 	CHECK_OGL
 	if ( logLength > 1 )
 	{
-		LOGI( "GL_INFO_LOG_LENGTH = %d", logLength );
-		GLchar log[ 2048 ];
-		glGetProgramInfoLog( prog, sizeof( log ), &logLength, log );
-		CHECK_OGL
-		LOGE( "Program link log(sz=%d):\n%s", logLength, log );
+		GLchar *log = (GLchar*)malloc( logLength );
+		glGetProgramInfoLog( prog, logLength, &logLength, log );
+		LOGE( "Program link log:\n%s", log );
 		glpr_last_link_log = log;
 	}
-	GLint status;
+	GLint status=0;
 	glGetProgramiv( prog, GL_LINK_STATUS, &status );
 	CHECK_OGL
 	if ( status == 0 )
@@ -183,7 +184,7 @@ static int bind_attribute( unsigned int program, const char* attributes, const c
 
 bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const char* src_fsh, const char* attributes, const char* uniforms )
 {
-	GLuint vertShader, fragShader;
+	GLuint vertShader=0, fragShader=0;
 
 	program = glCreateProgram();
 	CHECK_OGL
@@ -292,6 +293,8 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	if (vertShader) glDeleteShader(vertShader);
 	if (fragShader) glDeleteShader(fragShader);
 	CHECK_OGL
+
+	glpr_programCount++;
 
 	LOGI( "Loaded program %s as handle %d", name, program );
 
