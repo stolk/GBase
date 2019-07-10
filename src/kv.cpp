@@ -13,6 +13,7 @@ static const char* filesPath=0;
 
 void kv_init( const char* fp )
 {
+	ASSERT( fp );
 	filesPath = fp;
 	nfy_queue_msg( "keyvalue ready=1 sync=0" );
 }
@@ -26,7 +27,7 @@ bool kv_sync( void )
 
 void kv_set_int( const char* key, const int v )
 {
-	ASSERT( filesPath );
+	ASSERTM( filesPath, "Cannot set key '%s' because filePath has not been set yet.", key );
 	char fname[ 256 ];
 	snprintf( fname, sizeof(fname), "%s/.%s", filesPath, key );
 	FILE* f = 0;
@@ -45,7 +46,7 @@ void kv_set_int( const char* key, const int v )
 
 void kv_set_flt( const char* key, const float v )
 {
-	ASSERT( filesPath );
+	ASSERTM( filesPath, "Cannot set key '%s' because filePath has not been set yet.", key );
 	char fname[ 256 ];
 	snprintf( fname, sizeof(fname), "%s/.%s", filesPath, key );
 	FILE* f = 0;
@@ -64,7 +65,7 @@ void kv_set_flt( const char* key, const float v )
 
 void kv_set_str( const char* key, const char* str )
 {
-	ASSERT( filesPath );
+	ASSERTM( filesPath, "Cannot set key '%s' because filePath has not been set yet.", key );
 	char fname[ 256 ];
 	snprintf( fname, sizeof(fname), "%s/.%s", filesPath, key );
 	FILE* f = 0;
@@ -84,7 +85,7 @@ void kv_set_str( const char* key, const char* str )
 
 void kv_set_blob( const char* key, const char* blob, size_t sz )
 {
-	ASSERT( filesPath );
+	ASSERTM( filesPath, "Cannot set key '%s' because filePath has not been set yet.", key );
 	char fname[ 256 ];
 	snprintf( fname, sizeof(fname), "%s/.%s", filesPath, key );
 	FILE *f = 0;
@@ -104,7 +105,7 @@ void kv_set_blob( const char* key, const char* blob, size_t sz )
 
 int kv_get_int( const char* key, int defaultvalue )
 {
-	ASSERT( filesPath );
+	ASSERTM( filesPath, "Cannot get key '%s' because filePath has not been set yet.", key );
 	char fname[ 256 ];
 	snprintf( fname, sizeof(fname), "%s/.%s", filesPath, key );
 	FILE* f = 0;
@@ -128,7 +129,7 @@ int kv_get_int( const char* key, int defaultvalue )
 
 float kv_get_flt( const char* key, float defaultvalue )
 {
-	ASSERT( filesPath );
+	ASSERTM( filesPath, "Cannot get key '%s' because filePath has not been set yet.", key );
 	char fname[ 256 ];
 	snprintf( fname, sizeof(fname), "%s/.%s", filesPath, key );
 	FILE* f = 0;
@@ -152,7 +153,7 @@ float kv_get_flt( const char* key, float defaultvalue )
 
 int kv_get_str( const char* key, char* str, int len )
 {
-	ASSERT( filesPath );
+	ASSERTM( filesPath, "Cannot get key '%s' because filePath has not been set yet.", key );
 	char fname[ 256 ];
 	snprintf( fname, sizeof(fname), "%s/.%s", filesPath, key );
 	FILE* f = 0;
@@ -178,7 +179,7 @@ int kv_get_str( const char* key, char* str, int len )
 
 size_t kv_get_blob( const char* key, char* blob, size_t maxsz )
 {
-	ASSERT( filesPath );
+	ASSERTM( filesPath, "Cannot get key '%s' because filePath has not been set yet.", key );
 	char fname[ 256 ];
 	snprintf( fname, sizeof(fname), "%s/.%s", filesPath, key );
 	FILE* f = 0;
