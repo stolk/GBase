@@ -10,6 +10,14 @@
 
 #include <EGL/egl.h>
 
+#define LAUNCH_FAILURE_NONE			 0
+#define LAUNCH_FAILURE_INSUFFICIENT_RESOURCES	-1
+#define LAUNCH_FAILURE_NO_GLES2_CONTEXT		-2
+#define LAUNCH_FAILURE_NO_GLES3_CONTEXT		-3
+#define LAUNCH_FAILURE_NO_MATCHING_EGL_CONFIG	-4
+#define LAUNCH_FAILURE_NO_WINDOW		-5
+
+
 struct android_app;
 
 typedef struct
@@ -44,7 +52,7 @@ extern int androidsupport_initDisplay( bool withDepthBuffer=true );
 extern void androidsupport_termDisplay( void );
 
 //! Report (java-side) that we failed to launch.
-extern bool androidsupport_reportFailedLaunch( const char* msg );
+extern bool androidsupport_reportFailedLaunch( int failcode );
 
 //! The name of the manufacturer.
 extern char androidsupport_manufacturer[80];

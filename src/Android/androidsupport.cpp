@@ -137,23 +137,22 @@ static bool alertFatal( const char* msg )
 
 
 //! Helper function to open a java-side dialog window with a message.
-bool androidsupport_reportFailedLaunch( const char* msg )
+bool androidsupport_reportFailedLaunch( int failcode )
 {
 	if ( !androidsupport_engine.app ) return false;
 
 	JNIEnv* env = androidsupport_engine.app->appThreadEnv;
 	if ( !env ) return false;
 
-	jstring jniText = env->NewStringUTF( msg );
-	EXCEPTION_RETURN( env );
-
 	jclass thisClass = env->GetObjectClass( androidsupport_engine.app->appThreadThis );
 	EXCEPTION_RETURN( env );
 
-	jmethodID alertMethod = env->GetMethodID( thisClass, "reportFailedLaunch", "(Ljava/lang/String;)V" );
+	jmethodID method = env->GetMethodID( thisClass, "reportFailedLaunch", "(I)V" );
 	EXCEPTION_RETURN( env );
 
-	env->CallVoidMethod( androidsupport_engine.app->appThreadThis, alertMethod, jniText );
+	jint code = failcode;
+
+	env->CallVoidMethod( androidsupport_engine.app->appThreadThis, method, code );
 	EXCEPTION_RETURN( env );
 
 	return true;
@@ -293,7 +292,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 		eglChooseConfig( display, attribs_fallback, &config, 1, &numConfigs);
 		CHECKEGLV( eglChooseConfig )
 		if ( numConfigs < 0 )
-			return -1;
+			return LAUNCH_FAILURE_NO_MATCHING_EGL_CONFIG;
 	}
 
 	/* EGL_NATIVE_VISUAL_ID is an attribute of the EGLConfig that is
@@ -308,7 +307,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 
 	surface = eglCreateWindowSurface( display, config, engine->app->window, NULL );
 	EGLint eglerr = eglGetError();
-	if ( eglerr == EGL_BAD_ALLOC ) return -2;
+	if ( eglerr == EGL_BAD_ALLOC ) return LAUNCH_FAILURE_INSUFFICIENT_RESOURCES;
 	ASSERTM( eglerr==EGL_SUCCESS, "eglCreateWindowSurface() failed with %s", eglErrorString(eglerr) );
 
 	const EGLint contextAttribsES3[] =
@@ -327,7 +326,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 	if ( eglerr != EGL_SUCCESS )
 	{
 		LOGE( "Couldn't create ES2 context: this device is incompatible!" );
-		return -1;
+		return LAUNCH_FAILURE_NO_GLES2_CONTEXT;
 	}
 #else
 	context = eglCreateContext( display, config, NULL, contextAttribsES3 );
@@ -337,7 +336,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 		context = eglCreateContext( display, config, NULL, contextAttribsES2 );
 		CHECKEGLV( eglCreateContext );
 		LOGE( "Couldn't create ES3 context, can only create ES2 context: this device is incompatible!" );
-		return -1;
+		return LAUNCH_FAILURE_NO_GLES3_CONTEXT;
 	}
 #endif
 
@@ -356,7 +355,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 
 	LOGI("Created surface of size %dx%d", w, h);
 
-	return 0;
+	return LAUNCH_FAILURE_NONE;
 }
 
 
