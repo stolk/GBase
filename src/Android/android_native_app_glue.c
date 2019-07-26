@@ -229,8 +229,14 @@ static void* android_app_entry(void* param) {
     android_app->looper = looper;
 
 #if 1 // Taken from nvidia example
-    int error = (*android_app->activity->vm)->AttachCurrentThread(android_app->activity->vm, &android_app->appThreadEnv, NULL);
-    if (error) android_app->appThreadEnv = NULL;
+    android_app->appThreadEnv = 0;
+    JavaVMAttachArgs attachArgs;
+    attachArgs.version = JNI_VERSION_1_4;
+    attachArgs.name = "NativeThread";
+    attachArgs.group = 0;
+    android_app->attachError = (*android_app->activity->vm)->AttachCurrentThread(android_app->activity->vm, &android_app->appThreadEnv, &attachArgs);
+    if ( android_app->attachError != JNI_OK )
+    	android_app->appThreadEnv = 0;
 #endif
 
     pthread_mutex_lock(&android_app->mutex);
@@ -241,8 +247,10 @@ static void* android_app_entry(void* param) {
     android_main(android_app);
 
 #if 1
-    error = (*android_app->activity->vm)->DetachCurrentThread( android_app->activity->vm);
+    int error = (*android_app->activity->vm)->DetachCurrentThread( android_app->activity->vm);
     if ( error ) LOGE( "DetachCurrentThread() failed" );
+    android_app->appThreadEnv = 0;
+    android_app->attachError = 0;
 #endif
 
     android_app_destroy(android_app);

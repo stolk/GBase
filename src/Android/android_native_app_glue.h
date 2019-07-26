@@ -187,6 +187,7 @@ struct android_app {
     int stateSaved;
     int destroyed;
     int redrawNeeded;
+    int attachError;
     AInputQueue* pendingInputQueue;
     ANativeWindow* pendingWindow;
     ARect pendingContentRect;
