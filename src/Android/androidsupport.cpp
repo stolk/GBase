@@ -212,6 +212,7 @@ void androidsupport_init( struct android_app* app )
 	memset( &androidsupport_engine, 0, sizeof( androidsupport_engine) );
 	androidsupport_engine.app = app;
 	asserthook = androidsupport_presentAssert;	// If an assert is triggered, call this function.
+	ASSERTM( app->appThreadEnv != 0, "AttachCurrentThread() failed with error %d", app->attachError );
 }
 
 
