@@ -89,22 +89,22 @@ int glpr_add( const char* nm, unsigned int program )
 	glpr_name[ glpr_numu ] = nm;
 	glpr_prog[ glpr_numu ] = program;
 	glpr_unif[ glpr_numu ] = glGetUniformLocation( program, nm );
+	CHECK_OGL_RELEASE
 	if ( glpr_unif[ glpr_numu ] < 0 )
 		LOGE( "Failed to get uniform location of '%s' for program nr %d", nm, program );
 	return glpr_unif[ glpr_numu++ ];
 }
 
-
 static bool glpr_compile( GLuint* shader, GLenum type, const GLchar* source )
 {
 	ASSERT( source );
 	*shader = glCreateShader(type);
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 	ASSERT( *shader > 0 );
 	glShaderSource( *shader, 1, &source, NULL );
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 	glCompileShader( *shader );
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 	GLint logLength=0;
 	glGetShaderiv( *shader, GL_INFO_LOG_LENGTH, &logLength );
 	if ( logLength > 1 )
@@ -122,7 +122,7 @@ static bool glpr_compile( GLuint* shader, GLenum type, const GLchar* source )
 		glDeleteShader( *shader );
 		return false;
 	}
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 	return true;
 }
 
@@ -130,10 +130,10 @@ static bool glpr_compile( GLuint* shader, GLenum type, const GLchar* source )
 static bool glpr_link( GLuint prog )
 {
 	glLinkProgram( prog );
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 	GLint logLength=0;
 	glGetProgramiv( prog, GL_INFO_LOG_LENGTH, &logLength );
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 	if ( logLength > 1 )
 	{
 		GLchar *log = (GLchar*)malloc( logLength );
@@ -143,10 +143,10 @@ static bool glpr_link( GLuint prog )
 	}
 	GLint status=0;
 	glGetProgramiv( prog, GL_LINK_STATUS, &status );
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 	if ( status == 0 )
 		return false;
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 	return true;
 }
 
@@ -178,6 +178,7 @@ static int bind_attribute( unsigned int program, const char* attributes, const c
 	if ( c > ',' )
 		return 0;
 	glBindAttribLocation( program, loc, name );
+	CHECK_OGL_RELEASE
 	return 1;
 }
 
@@ -186,8 +187,12 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 {
 	GLuint vertShader=0, fragShader=0;
 
+#if !defined(DEBUG)
+	glGetError();	// reset the error flag.
+#endif
+
 	program = glCreateProgram();
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 
 	bool vshOk = glpr_compile( &vertShader, GL_VERTEX_SHADER, src_vsh );
 	if ( !vshOk )
@@ -213,9 +218,11 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 
 	// Attach vertex shader to program.
 	glAttachShader(program, vertShader);
+	CHECK_OGL_RELEASE
 
 	// Attach fragment shader to program.
 	glAttachShader(program, fragShader);
+	CHECK_OGL_RELEASE
 
 	// Bind attribute locations.
 	// This needs to be done prior to linking.
@@ -245,27 +252,27 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	numbound += bind_attribute( program, attributes, "hue", ATTRIB_HUE );
 	// specific to FTT
 	numbound += bind_attribute( program, attributes, "uvshift", ATTRIB_UVSHIFT );
-
+	CHECK_OGL_RELEASE
 	//LOGI( "bound %d attributes for shader %s", numbound, name );
 	(void)numbound;
 
 	// Link program.
 	if ( !glpr_link( program ) )
 	{
-		LOGI ( "Failed to link program %s", name );
+		LOGE( "Failed to link program %s", name );
 		if (vertShader)
 		{
-			glDeleteShader(vertShader);
+			glDeleteShader(vertShader); CHECK_OGL_RELEASE
 			vertShader = 0;
 		}
 		if (fragShader)
 		{
-			glDeleteShader(fragShader);
+			glDeleteShader(fragShader); CHECK_OGL_RELEASE
 			fragShader = 0;
 		}
 		if (program)
 		{
-			glDeleteProgram(program);
+			glDeleteProgram(program); CHECK_OGL_RELEASE
 			program = 0;
 		}
 		return false;
@@ -292,7 +299,7 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	// Release vertex and fragment shaders.
 	if (vertShader) glDeleteShader(vertShader);
 	if (fragShader) glDeleteShader(fragShader);
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 
 	glpr_programCount++;
 
