@@ -5,6 +5,7 @@
 #define CHECKOGL_H
 
 #include "baseconfig.h"
+#include "logx.h"
 
 #ifndef GL_GLEXT_PROTOTYPES
 #define GL_GLEXT_PROTOTYPES 1
@@ -107,23 +108,25 @@
 	}
 
 
-#if defined(DEBUG)
-#	include <assert.h>
-#	include "logx.h"
-#	define CHECK_OGL \
+
+#define CHECK_OGL_FUNC \
 { \
 	GLenum err = glGetError(); \
 	if ( err != GL_NO_ERROR ) \
 	{ \
 		const char* _s = 0; \
 		ERR2STR( err, _s ); \
-		LOGE( "OpenGL Error %s:%d (%x) %s", __FILE__, __LINE__, err, _s ); \
-		assert( err == GL_NO_ERROR ); \
+		ASSERTM( err == GL_NO_ERROR, "OpenGL Error %s:%d (0x%x) %s", __FILE__, __LINE__, err, _s ); \
 	} \
 }
+
+#if defined(DEBUG)
+#	define CHECK_OGL CHECK_OGL_FUNC
 #else
 #	define CHECK_OGL
 #endif
+
+#define CHECK_OGL_RELEASE CHECK_OGL_FUNC
 
 
 #if defined( OSX )
