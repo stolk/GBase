@@ -30,31 +30,32 @@ static bool create_vbo( geomdesc_t* geomdesc, bool istextured )
 	bool created=false;
 	if ( !geomdesc->vbos[0] && geomdesc->numt )
 	{
-		CHECK_OGL
+#if !defined(DEBUG)
+		glGetError();
+#endif
 #ifdef USE_VAO
 		glGenVertexArrays( 1, &geomdesc->vaos[0] );
-		CHECK_OGL
-
+		CHECK_OGL_RELEASE
 		ASSERT( geomdesc->vaos[0] );
 		glBindVertexArray( geomdesc->vaos[0] );
-		CHECK_OGL
+		CHECK_OGL_RELEASE
 #else
 		geomdesc->vaos[0] = 0;
 #endif
 
 		glGenBuffers( 1, &geomdesc->vbos[0] );
+		CHECK_OGL_RELEASE
 		if ( !geomdesc->vbos[0] )
 		{
 			// This happens for Android customers. I guess the device is out of memory?
-			const char* errortext;
-			ERR2STR( glGetError(), errortext );
-			ASSERTM( geomdesc->vbos[0], "Failed to create a vertex buffer object for %s: %s", geomdesc->tag, errortext );
+			ASSERTM( geomdesc->vbos[0], "Failed to create a vertex buffer object for faces of object %s", geomdesc->tag );
 		}
 
 		glBindBuffer( GL_ARRAY_BUFFER, geomdesc->vbos[0] );
-		CHECK_OGL
+		CHECK_OGL_RELEASE
 
 		glBufferData( GL_ARRAY_BUFFER, geomdesc->vbo_sizes[0], geomdesc->vdata, GL_STATIC_DRAW );
+		CHECK_OGL_RELEASE
 
 		int stride = 9*sizeof(float);			// vx,vy,vz,nx,ny,nz,r,g,b
 		if ( istextured ) stride = 8*sizeof(float);	// vx,vy,vz,nx,ny,nz,u,v
@@ -72,9 +73,11 @@ static bool create_vbo( geomdesc_t* geomdesc, bool istextured )
 			glEnableVertexAttribArray( ATTRIB_UV );
 		else
 			glEnableVertexAttribArray( ATTRIB_RGB );
+		CHECK_OGL_RELEASE
 #endif
 
 		glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		CHECK_OGL_RELEASE
 
 #ifdef USE_VAO
 		glBindVertexArray( 0 );
@@ -87,6 +90,7 @@ static bool create_vbo( geomdesc_t* geomdesc, bool istextured )
 	{
 #ifdef USE_VAO
 		glGenVertexArrays( 1, &geomdesc->vaos[1] );
+		CHECK_OGL_RELEASE
 		ASSERT( geomdesc->vaos[1] );
 		glBindVertexArray( geomdesc->vaos[1] );
 #else
@@ -94,15 +98,19 @@ static bool create_vbo( geomdesc_t* geomdesc, bool istextured )
 #endif
         
 		glGenBuffers( 1, &geomdesc->vbos[1] );
-		ASSERT( geomdesc->vbos[1] );
-        
+		CHECK_OGL_RELEASE
+		ASSERTM( geomdesc->vbos[1], "Failed to create vbo for edges of model %s", geomdesc->tag );
+
 		glBindBuffer( GL_ARRAY_BUFFER, geomdesc->vbos[1] );
+		CHECK_OGL_RELEASE
 		
 		glBufferData( GL_ARRAY_BUFFER, geomdesc->vbo_sizes[1], geomdesc->edata, GL_STATIC_DRAW );
+		CHECK_OGL_RELEASE
 		
 #ifdef USE_VAO
 		glVertexAttribPointer( ATTRIB_VERTEX, 3, GL_FLOAT, 0, 3 * sizeof(float), 0 );
 		glEnableVertexAttribArray( ATTRIB_VERTEX );
+		CHECK_OGL_RELEASE
 #endif
 
 		glBindBuffer( GL_ARRAY_BUFFER, 0 );
@@ -539,6 +547,7 @@ float* geomdb_fetch( geomdesc_t* geomdesc )
 	if ( !dir )
 	{
 		LOGE( "Cannot open dir %s", geomdb_path );
+		ASSERTM( dir, "opendir() failed for %s", geomdb_path );
 		return 0;
 	}
 	struct dirent* entry;
