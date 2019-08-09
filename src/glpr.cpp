@@ -193,6 +193,7 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 
 	program = glCreateProgram();
 	CHECK_OGL_RELEASE
+	ASSERT( program > 0 );
 
 	bool vshOk = glpr_compile( &vertShader, GL_VERTEX_SHADER, src_vsh );
 	if ( !vshOk )
