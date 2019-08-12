@@ -36,44 +36,30 @@ bool shdw_createFramebuffer( bool supportsDepthTexture )
 
 	// create the framebuffer
 	glGenFramebuffers( 1, &shadowFramebuffer );
+	CHECK_OGL_RELEASE
 	glBindFramebuffer( GL_FRAMEBUFFER, shadowFramebuffer );
+	CHECK_OGL_RELEASE
 	//glPixelStorei( GL_UNPACK_ALIGNMENT, 1 ); // ES analyzer told me to do this.
 
 	// create the texture
 	glGenTextures( 1, &shdw_texture );
+	CHECK_OGL_RELEASE
 	glBindTexture( GL_TEXTURE_2D, shdw_texture );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-	CHECK_OGL
+	CHECK_OGL_RELEASE
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+	CHECK_OGL_RELEASE
 	if ( !supportsDepthTexture )
 	{
 #if defined( MSWIN ) || defined( MAC ) || defined( JS ) || defined( IPHN ) || defined( APTV ) || ( defined( USEES2 ) && defined( XWIN ) )
 		LOGE( "No depth texture support." );
-		assert( supportsDepthTexture );
-#elif defined( XWIN ) || defined( OCVR )
-		// This does not work yet, on ES3. Needs debugging.
-		colorbuffermem = (unsigned int*)malloc( 2 * sizeof(unsigned int) * SHADOWBUFFERSIZE * SHADOWBUFFERSIZE );
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, SHADOWBUFFERSIZE, SHADOWBUFFERSIZE, 0, GL_RGBA, GL_HALF_FLOAT, colorbuffermem );
-		CHECK_OGL
+		ASSERT( supportsDepthTexture );
 #else
 		colorbuffermem = (unsigned int*)malloc( 2 * sizeof(unsigned int) * SHADOWBUFFERSIZE * SHADOWBUFFERSIZE );
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, SHADOWBUFFERSIZE, SHADOWBUFFERSIZE, 0, GL_RGBA, GL_HALF_FLOAT, colorbuffermem );
-		CHECK_OGL
-
-		// create a depth buffer for the shadow framebuffer
-#	if defined( ANDROID ) || defined( RASP ) || defined( IPHN ) || defined( XWIN ) || defined( MSWIN ) || defined( MAC ) || defined( OSX )
-		glGenRenderbuffers( 1, &shadowDepth );
-		glBindRenderbuffer( GL_RENDERBUFFER, shadowDepth ) ;
-		glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, SHADOWBUFFERSIZE, SHADOWBUFFERSIZE );
-#	else
-		// simulator: we can use Apple extensions
-		glGenRenderbuffers( 1, &shadowDepth );
-		glBindRenderbuffer( GL_RENDERBUFFER, shadowDepth );
-		glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, SHADOWBUFFERSIZE, SHADOWBUFFERSIZE );
-#	endif
-		CHECK_OGL
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, SHADOWBUFFERSIZE, SHADOWBUFFERSIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, colorbuffermem );
+		CHECK_OGL_RELEASE
 #endif
 	}
 	else
@@ -107,30 +93,30 @@ bool shdw_createFramebuffer( bool supportsDepthTexture )
 		 	GL_UNSIGNED_INT,			// type
 		 	pixels					// pixels
 		);
-		CHECK_OGL
+		CHECK_OGL_RELEASE
 	}
 	glBindTexture( GL_TEXTURE_2D, 0 );
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 
 #if defined( MSWIN ) || defined( MAC )
 	// Depth buffer only, so we will not be drawing or reading colours.
 	glReadBuffer( GL_NONE );
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 	glDrawBuffer( GL_NONE );
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 #endif
 
 	// attach the texture
 	if ( !supportsDepthTexture )
 	{
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shdw_texture, 0 );
-		CHECK_OGL
+		CHECK_OGL_RELEASE
 		LOGI( "Attached shadow texture with id 0x%x as color to shadowFramebuffer with id 0x%x", shdw_texture, shadowFramebuffer );
 	}
 	else
 	{
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shdw_texture, 0 );
-		CHECK_OGL
+		CHECK_OGL_RELEASE
 		LOGI( "Attached shadow texture with id 0x%x as depth to shadowFramebuffer with id 0x%x", shdw_texture, shadowFramebuffer );
 		if ( shdw_completeframebufferfix )
 		{
@@ -139,25 +125,21 @@ bool shdw_createFramebuffer( bool supportsDepthTexture )
 			GLuint colr_texture=0;
 			glGenTextures( 1, &colr_texture );
 			glBindTexture( GL_TEXTURE_2D, colr_texture );
-			CHECK_OGL
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,  GL_CLAMP_TO_EDGE );
-			CHECK_OGL
+			CHECK_OGL_RELEASE
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,  GL_CLAMP_TO_EDGE );
+			CHECK_OGL_RELEASE
 			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, SHADOWBUFFERSIZE, SHADOWBUFFERSIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
-			CHECK_OGL
+			CHECK_OGL_RELEASE
 			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colr_texture, 0 );
 			LOGI( "Attached colour texture with id 0x%x as colour to shadowFramebuffer with id 0x%x", colr_texture, shadowFramebuffer );
 		}
 	}
  
 	// check for success
-#if defined( XWIN ) || defined( JS )
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER) ;
-#else
-	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER) ;
-#endif
 
 	switch( status )
 	{
