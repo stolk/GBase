@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 
 static const char* filesPath=0;
 
@@ -37,8 +38,11 @@ void kv_set_int( const char* key, const int v )
 	f = fopen( fname, "w" );
 #endif
 	if ( !f )
+	{
 		LOGE( "Cannot write key-value pair to '%s'", fname );
-	ASSERTM( f, "Failed to open %s for writing.", fname );	// Has triggered in the wild, once.
+		const char* e = strerror( errno );
+		ASSERTM( f, "Failed to open %s for writing (%s).", fname, e ? e : "-" );
+	}
 	fprintf( f, "%d", v );
 	fclose( f );
 }
@@ -56,8 +60,11 @@ void kv_set_flt( const char* key, const float v )
 	f = fopen( fname, "w" );
 #endif
 	if ( !f )
+	{
 		LOGE( "Cannot write key-value pair to '%s'", fname );
-	ASSERT( f );
+		const char* e = strerror( errno );
+		ASSERTM( f, "Failed to open %s for writing (%s).", fname, e ? e : "-" );
+	}
 	fprintf( f, "%f", v );
 	fclose( f );
 }
@@ -75,11 +82,13 @@ void kv_set_str( const char* key, const char* str )
 	f = fopen( fname, "w" );
 #endif
 	if ( !f )
+	{
 		LOGE( "Cannot write key-value pair to '%s'", fname );
-	ASSERT( f );
+		const char* e = strerror( errno );
+		ASSERTM( f, "Failed to open %s for writing (%s).", fname, e ? e : "-" );
+	}
 	fprintf( f, "%s", str );
 	fclose( f );
-
 }
 
 
@@ -95,8 +104,11 @@ void kv_set_blob( const char* key, const char* blob, size_t sz )
 	f = fopen( fname, "w" );
 #endif
 	if ( !f )
+	{
 		LOGE( "Cannot write key-value pair to '%s'", fname );
-	ASSERT( f );
+		const char* e = strerror( errno );
+		ASSERTM( f, "Failed to open %s for writing (%s).", fname, e ? e : "-" );
+	}
 	size_t numw = fwrite( blob, 1, sz, f );
 	ASSERT( numw == sz );
 	fclose( f );
