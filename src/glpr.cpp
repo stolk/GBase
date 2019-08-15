@@ -95,6 +95,7 @@ int glpr_add( const char* nm, unsigned int program )
 	return glpr_unif[ glpr_numu++ ];
 }
 
+
 static bool glpr_compile( GLuint* shader, GLenum type, const GLchar* source )
 {
 	ASSERT( source );
@@ -107,22 +108,24 @@ static bool glpr_compile( GLuint* shader, GLenum type, const GLchar* source )
 	CHECK_OGL_RELEASE
 	GLint logLength=0;
 	glGetShaderiv( *shader, GL_INFO_LOG_LENGTH, &logLength );
+	CHECK_OGL_RELEASE
 	if ( logLength > 1 )
 	{
 		GLchar *log = (GLchar *)malloc( logLength );
 		glGetShaderInfoLog( *shader, logLength, &logLength, log );
+		CHECK_OGL_RELEASE
 		LOGI( "Shader compile log:\n%s", log );
 		glpr_last_compile_log = log;
 	}
 	GLint status=0;
 	glGetShaderiv( *shader, GL_COMPILE_STATUS, &status );
-	CHECK_OGL
+	CHECK_OGL_RELEASE
 	if ( status == 0 )
 	{
 		glDeleteShader( *shader );
+		CHECK_OGL_RELEASE
 		return false;
 	}
-	CHECK_OGL_RELEASE
 	return true;
 }
 
@@ -138,6 +141,7 @@ static bool glpr_link( GLuint prog )
 	{
 		GLchar *log = (GLchar*)malloc( logLength );
 		glGetProgramInfoLog( prog, logLength, &logLength, log );
+		CHECK_OGL_RELEASE
 		LOGE( "Program link log:\n%s", log );
 		glpr_last_link_log = log;
 	}
@@ -146,7 +150,6 @@ static bool glpr_link( GLuint prog )
 	CHECK_OGL_RELEASE
 	if ( status == 0 )
 		return false;
-	CHECK_OGL_RELEASE
 	return true;
 }
 
@@ -190,10 +193,10 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 #if !defined(DEBUG)
 	glGetError();	// reset the error flag.
 #endif
-
 	program = glCreateProgram();
 	CHECK_OGL_RELEASE
 	ASSERT( program > 0 );
+	ASSERTM( glIsProgram( program ), "Freshly created program for %s not a GL program!", name );
 
 	bool vshOk = glpr_compile( &vertShader, GL_VERTEX_SHADER, src_vsh );
 	if ( !vshOk )
@@ -216,18 +219,19 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	{
 		LOGI( "Compiled fragment shader %s", name );
 	}
-
+	ASSERTM( glIsProgram( program ), "Program for %s not a GL program", name );
+	CHECK_OGL_RELEASE
 	// Attach vertex shader to program.
+	ASSERTM( glIsShader( vertShader ), "%s not a vert shader.", name );
 	glAttachShader(program, vertShader);
 	CHECK_OGL_RELEASE
-
 	// Attach fragment shader to program.
+	ASSERTM( glIsShader( fragShader ), "%s not a frag shader.", name );
 	glAttachShader(program, fragShader);
 	CHECK_OGL_RELEASE
 
 	// Bind attribute locations.
 	// This needs to be done prior to linking.
-
 	int numbound=0;
 	numbound += bind_attribute( program, attributes, "position", ATTRIB_VERTEX );
 	numbound += bind_attribute( program, attributes, "surfacenormal", ATTRIB_NORMAL );
