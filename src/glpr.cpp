@@ -82,9 +82,9 @@ int glpr_uniform( const char* nm )
 	return -1;
 }
 
-
 int glpr_add( const char* nm, unsigned int program )
 {
+	ASSERTM( glIsProgram( program ), "Program %u is not a GL program, so can't get uniform location for '%s'", program, nm );
 	ASSERT( glpr_numu < MAXUNIFORMS );
 	glpr_name[ glpr_numu ] = nm;
 	glpr_prog[ glpr_numu ] = program;
@@ -196,7 +196,7 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	program = glCreateProgram();
 	CHECK_OGL_RELEASE
 	ASSERT( program > 0 );
-	ASSERTM( glIsProgram( program ), "Freshly created program for %s not a GL program!", name );
+	ASSERTM( glIsProgram( program ), "Freshly created program %u for %s not a GL program!", program, name );
 
 	bool vshOk = glpr_compile( &vertShader, GL_VERTEX_SHADER, src_vsh );
 	if ( !vshOk )
@@ -219,7 +219,7 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	{
 		LOGI( "Compiled fragment shader %s", name );
 	}
-	ASSERTM( glIsProgram( program ), "Program for %s not a GL program", name );
+	ASSERTM( glIsProgram( program ), "Program %u for %s not a GL program", program, name );
 	CHECK_OGL_RELEASE
 	// Attach vertex shader to program.
 	ASSERTM( glIsShader( vertShader ), "%s not a vert shader.", name );
