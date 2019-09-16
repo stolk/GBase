@@ -10,35 +10,61 @@
 
 
 #define MAXUNIFORMS	512
+#define MAXGLPROGS	16
+
 static int		glpr_unif[ MAXUNIFORMS ];	//!< uniform values.
 static const char*	glpr_name[ MAXUNIFORMS ];	//!< uniform names.
-static unsigned int	glpr_prog[ MAXUNIFORMS ];	//!< programs associated with uniforms.
+static unsigned int	glpr_unif_prog[ MAXUNIFORMS ];	//!< programs associated with uniforms.
 static int		glpr_numu;			//!< nr of uniforms.
+
+static unsigned int	glpr_programs[ MAXGLPROGS ];
+static int		glpr_numprograms;
+
 
 // To avoid name-clashes between different programs, we use a start index where we search for a uniform name.
 static int		glpr_searchindex;
-static int		glpr_usedprogram;
-static int 		glpr_programCount;
+static unsigned int	glpr_usedprogram;
 
 const char*		glpr_last_compile_log;		//!< the last GLSL compile log.
 const char*		glpr_last_link_log;		//!< the last GLSL link log.
 
-
 void glpr_init( void )
 {
+	if ( glpr_numprograms || glpr_numu )
+		LOGE( "glpr is leaking! numprograms: %d numuniforms: %d", glpr_numprograms, glpr_numu );
+	glpr_numprograms = 0;
 	glpr_numu = 0;
-	glpr_usedprogram = -1;
-	glpr_programCount = 0;
 	glpr_last_compile_log = "";
 	glpr_last_link_log = "";
-	for ( int i=0; i<MAXUNIFORMS; ++i )
+}
+
+
+void glpr_clear( void )
+{
+	LOGI( "Clearing out %d programs and %d uniforms...", glpr_numprograms, glpr_numu );
+	// Clear out the uniforms.
+	for ( int i=0; i<glpr_numu; ++i )
 	{
 		glpr_unif[ i ] = -1;
 		if ( glpr_name[ i ] )
-			free( (void*)glpr_name[ i ] );
+			free( (void*) glpr_name[ i ] );
 		glpr_name[ i ] = 0;
-		glpr_prog[ i ] = 0;
+		glpr_unif_prog[ i ] = 0;
 	}
+	glpr_numu = 0;
+
+	// Clear out the programs.
+	for ( int i=0; i<glpr_numprograms; ++i )
+	{
+		glDeleteProgram( glpr_programs[i] );
+		CHECK_OGL
+		glpr_programs[i] = 0;
+	}
+	glpr_numprograms = 0;
+
+	glpr_usedprogram = 0;
+	glpr_last_compile_log = "";
+	glpr_last_link_log = "";
 }
 
 
@@ -47,10 +73,10 @@ void glpr_dump( void )
 	unsigned int program = 0xffffffff;
 	for ( int i=0; i<glpr_numu; ++i )
 	{
-		unsigned int pg = glpr_prog[ i ];
+		unsigned int pg = glpr_unif_prog[ i ];
 		if ( pg != program )
 		{
-			LOGI( "PROGRAM %d:", pg );
+			LOGI( "PROGRAM %u:", pg );
 			program = pg;
 		}
 		LOGI( "%d %s", glpr_unif[ i ], glpr_name[ i ] );
@@ -60,11 +86,19 @@ void glpr_dump( void )
 
 void glpr_use( unsigned int program )
 {
-	ASSERTM( program >= 0, "Invalid program specified in glpr_use( %d )", program );
+	ASSERTM( program > 0, "Invalid program specified in glpr_use( %u )", program );
+
+	bool found=0;
+	for ( int i=0; i<glpr_numprograms; ++i )
+		if ( glpr_programs[i] == program )
+			found=true;
+
+	ASSERTM( found, "Program %u was not found amoung %d loaded programs.", program, glpr_numprograms );
+
 	glUseProgram( program );
 	CHECK_OGL
 	for ( glpr_searchindex = 0; glpr_searchindex < glpr_numu; ++glpr_searchindex )
-		if ( glpr_prog[ glpr_searchindex ] == program )
+		if ( glpr_unif_prog[ glpr_searchindex ] == program )
 			break;
 	glpr_usedprogram = program;
 }
@@ -72,26 +106,28 @@ void glpr_use( unsigned int program )
 
 int glpr_uniform( const char* nm )
 {
-	ASSERTM( glpr_usedprogram >= 0, "Cannot get uniform %s if glpr_use was not called.", nm );
+	ASSERTM( glpr_usedprogram > 0, "Cannot get uniform %s if glpr_use was not called.", nm );
 	for ( int i=glpr_searchindex; i<glpr_numu; ++i )
 	{
 		if ( !strcmp( nm, glpr_name[ i ] ) )
 			return glpr_unif[ i ];
 	}
-	ASSERTM( 0, "uniform '%s' for program %d not found. Searched [%d,%d). Program Count: %d", nm, glpr_usedprogram, glpr_searchindex, glpr_numu, glpr_programCount );
+	ASSERTM( 0, "uniform '%s' for program %u not found. Searched [%d,%d). Program Count: %d", nm, glpr_usedprogram, glpr_searchindex, glpr_numu, glpr_numprograms );
 	return -1;
 }
 
-int glpr_add( const char* nm, unsigned int program )
+
+static int glpr_add( const char* nm, unsigned int program )
 {
 	ASSERTM( glIsProgram( program ), "Program %u is not a GL program, so can't get uniform location for '%s'", program, nm );
+	ASSERTM( glpr_numprograms > 0, "Cannot add uniform '%s' for program %d is we have 0 programs loaded.", nm, program );
 	ASSERT( glpr_numu < MAXUNIFORMS );
 	glpr_name[ glpr_numu ] = nm;
-	glpr_prog[ glpr_numu ] = program;
+	glpr_unif_prog[ glpr_numu ] = program;
 	glpr_unif[ glpr_numu ] = glGetUniformLocation( program, nm );
 	CHECK_OGL_RELEASE
 	if ( glpr_unif[ glpr_numu ] < 0 )
-		LOGE( "Failed to get uniform location of '%s' for program nr %d", nm, program );
+		LOGE( "Failed to get uniform location of '%s' for program %u", nm, program );
 	return glpr_unif[ glpr_numu++ ];
 }
 
@@ -111,7 +147,7 @@ static bool glpr_compile( GLuint* shader, GLenum type, const GLchar* source )
 	CHECK_OGL_RELEASE
 	if ( logLength > 1 )
 	{
-		GLchar *log = (GLchar *)malloc( logLength );
+		GLchar *log = (GLchar *)malloc( (unsigned int)logLength );
 		glGetShaderInfoLog( *shader, logLength, &logLength, log );
 		CHECK_OGL_RELEASE
 		LOGI( "Shader compile log:\n%s", log );
@@ -120,10 +156,10 @@ static bool glpr_compile( GLuint* shader, GLenum type, const GLchar* source )
 	GLint status=0;
 	glGetShaderiv( *shader, GL_COMPILE_STATUS, &status );
 	CHECK_OGL_RELEASE
+
 	if ( status == 0 )
 	{
-		glDeleteShader( *shader );
-		CHECK_OGL_RELEASE
+		// We failed compilation.
 		return false;
 	}
 	return true;
@@ -139,7 +175,7 @@ static bool glpr_link( GLuint prog )
 	CHECK_OGL_RELEASE
 	if ( logLength > 1 )
 	{
-		GLchar *log = (GLchar*)malloc( logLength );
+		GLchar *log = (GLchar*)malloc( (unsigned int)logLength );
 		glGetProgramInfoLog( prog, logLength, &logLength, log );
 		CHECK_OGL_RELEASE
 		LOGE( "Program link log:\n%s", log );
@@ -153,17 +189,18 @@ static bool glpr_link( GLuint prog )
 	return true;
 }
 
-
 bool glpr_validate( GLuint prog )
 {
+	ASSERTM( prog>0, "Program 0 is not valid, so cannot validate. Number of programs loaded: %d", glpr_numprograms );
+	ASSERTM( glIsProgram( prog ), "Program %d is not a valid GL program, so cannot validate it. Number of programs loaded: %d", prog, glpr_numprograms );
 	GLint logLength, status;
 	glValidateProgram(prog);
 	glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
 	if ( logLength > 1 )
 	{
-		GLchar *log = (GLchar *)malloc(logLength);
+		GLchar *log = (GLchar *)malloc( (unsigned int) logLength );
 		glGetProgramInfoLog(prog, logLength, &logLength, log);
-		LOGI( "Program validate log:\n%s", log );
+		LOGE( "Program validate log:\n%s", log );
 		free(log);
 	}
 	glGetProgramiv(prog, GL_VALIDATE_STATUS, &status);
@@ -180,29 +217,25 @@ static int bind_attribute( unsigned int program, const char* attributes, const c
 	char c = s[ strlen( name ) ];
 	if ( c > ',' )
 		return 0;
-	glBindAttribLocation( program, loc, name );
+	glBindAttribLocation( program, (GLuint) loc, name );
 	CHECK_OGL_RELEASE
 	return 1;
 }
 
 
-bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const char* src_fsh, const char* attributes, const char* uniforms )
+unsigned int glpr_load( const char* name, const char* src_vsh, const char* src_fsh, const char* attributes, const char* uniforms )
 {
 	GLuint vertShader=0, fragShader=0;
-
+	GLuint program = 0;
 #if !defined(DEBUG)
 	glGetError();	// reset the error flag.
 #endif
-	program = glCreateProgram();
-	CHECK_OGL_RELEASE
-	ASSERT( program > 0 );
-	ASSERTM( glIsProgram( program ), "Freshly created program %u for %s not a GL program!", program, name );
-
 	bool vshOk = glpr_compile( &vertShader, GL_VERTEX_SHADER, src_vsh );
+	ASSERTM( vshOk, "Failed to compile vertex shader for %s: %s", name, glpr_last_compile_log );
 	if ( !vshOk )
 	{
 		LOGE( "Failed to compile vertex shader %s", name );
-		return false;
+		return 0;
 	}
 	else
 	{
@@ -210,15 +243,21 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	}
 
 	bool fshOk = glpr_compile( &fragShader, GL_FRAGMENT_SHADER, src_fsh );
+	ASSERTM( fshOk, "Failed to compile fragment shader for %s: %s", name, glpr_last_compile_log );
 	if ( !fshOk )
 	{
 		LOGE( "Failed to compile fragment shader %s", name );
-		return false;
+		return 0;
 	}
 	else
 	{
 		LOGI( "Compiled fragment shader %s", name );
 	}
+
+	program = glCreateProgram();
+	CHECK_OGL_RELEASE
+	ASSERT( program > 0 );
+
 	ASSERTM( glIsProgram( program ), "Program %u for %s not a GL program", program, name );
 	CHECK_OGL_RELEASE
 	// Attach vertex shader to program.
@@ -262,27 +301,15 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	(void)numbound;
 
 	// Link program.
-	if ( !glpr_link( program ) )
+	const bool linkOk = glpr_link( program );
+	ASSERTM( linkOk, "Linking of %s failed: %s", name, glpr_last_link_log );
+	if ( !linkOk )
 	{
 		LOGE( "Failed to link program %s", name );
-		if (vertShader)
-		{
-			glDeleteShader(vertShader); CHECK_OGL_RELEASE
-			vertShader = 0;
-		}
-		if (fragShader)
-		{
-			glDeleteShader(fragShader); CHECK_OGL_RELEASE
-			fragShader = 0;
-		}
-		if (program)
-		{
-			glDeleteProgram(program); CHECK_OGL_RELEASE
-			program = 0;
-		}
-		return false;
+		return 0;
 	}
 
+	glpr_programs[ glpr_numprograms++ ] = program;
 	glpr_searchindex = glpr_numu;
 	const char* s = uniforms;
 	while ( *s >= 32 )
@@ -290,7 +317,7 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 		const char* e = s;
 		while ( *e != ',' && *e > 32 )
 			++e;
-		size_t sz = 1 + e - s;
+		size_t sz = 1UL + (size_t) (e - s);
 		char* unifname = (char*) malloc( sz );
 		memcpy( unifname, s, sz-1 );
 		unifname[ sz-1 ] = 0;
@@ -306,10 +333,8 @@ bool glpr_load( const char* name, GLuint& program, const char* src_vsh, const ch
 	if (fragShader) glDeleteShader(fragShader);
 	CHECK_OGL_RELEASE
 
-	glpr_programCount++;
+	LOGI( "Loaded program %s as handle %u in slot %d", name, program, glpr_numprograms-1 );
 
-	LOGI( "Loaded program %s as handle %d", name, program );
-
-	return true;
+	return program;
 }
 

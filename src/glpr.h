@@ -14,7 +14,9 @@ extern void glpr_dump( void );
 
 extern void glpr_init( void );
 
-extern bool glpr_load( const char* name, unsigned int& program, const char* src_vsh, const char* src_fsh, const char* attributes, const char* uniforms );
+extern void glpr_clear( void );
+
+extern unsigned int glpr_load( const char* name, const char* src_vsh, const char* src_fsh, const char* attributes, const char* uniforms );
 
 extern bool glpr_validate( unsigned int prog );
 
