@@ -50,7 +50,7 @@ typedef struct
 
 extern const char* geomdb_path;
 
-//! Clears out all cached VBO and VAO data. Returns the nr of geometry entries purged.
+//! Clears out all cached VBO and VAO data, clears optional disk-cache. Returns the nr of geometry entries purged.
 extern int geomdb_clear( void );
 
 //! Add a geometry to the db, will cache the geometry as VAO / VBO.

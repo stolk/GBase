@@ -18,7 +18,7 @@ static geomdesc_t *geoms[ GEOMDB_MAX_SZ ];
 static int num_instances[ GEOMDB_MAX_SZ ];
 static bool textured[ GEOMDB_MAX_SZ ];
 static bool monochrome[ GEOMDB_MAX_SZ ];
-static float* cached[ GEOMDB_MAX_SZ ];
+static float* diskcache[ GEOMDB_MAX_SZ ];
 
 int geomdb_ringslot=0;
 static const int geomdb_numringslots=3;
@@ -345,15 +345,15 @@ int geomdb_unload_vbos(void)
 	return numUnloaded;
 }
 
-
 int geomdb_load_vbos(void)
 {
 	int numLoaded=0;
 	if ( !geomdb_sz )
 		return 0;
 	LOGI( "loading VBOs of geomdb containing %d entries:", geomdb_sz );
-	char summation[ 2048 ];
-	summation[ 0 ] = 0;
+	char summation[ 2048 ] = {0};
+	int summwr = 0;
+
 	for ( int i=0; i<geomdb_sz; ++i )
 	{
 		geomdesc_t* geomdesc = geoms[ i ];
@@ -367,8 +367,24 @@ int geomdb_load_vbos(void)
 		else
 #endif
 			created = create_vbo( geomdesc, textured[ i ] );
-		if ( i ) strncat( summation, " ", sizeof( summation ) - 1 );
-		strncat( summation, geomdesc->tag, sizeof( summation ) - 1 );
+
+		// Add to summation.
+		const size_t taglen = strlen( geomdesc->tag );
+		ASSERTM
+		(
+			taglen<40,
+			"Invalid tag of len %d: %c%c%c%c%c%c%c%c...",
+			(int)taglen, geomdesc->tag[0], geomdesc->tag[1], geomdesc->tag[2], geomdesc->tag[3],  geomdesc->tag[4],  geomdesc->tag[5], geomdesc->tag[6], geomdesc->tag[7]
+		);
+		const char* s = geomdesc->tag;
+		while (*s)
+		{
+			ASSERTM( summwr<2047, "geomdb with %d entries cannot be summerized. i=%d", geomdb_sz, i );
+			summation[ summwr++ ] = *s++;
+		}
+		ASSERT( summwr<2047 );
+		summation[ summwr++ ] = ' ';
+
 		if ( created ) numLoaded++;
 	}
 	LOGI( "%s", summation );
@@ -383,7 +399,7 @@ int geomdb_clear( void )
 	for ( int i=0; i<geomdb_sz; ++i )
 		if ( geomdb_evict( i ) )
 			numEvicted++;
-	LOGI( "geomdb cleared of %d entries (%d evicted from cache).", geomdb_sz, numEvicted );
+	LOGI( "geomdb cleared of %d entries (%d of which were cached from disk.).", geomdb_sz, numEvicted );
 	geomdb_sz = 0;
 	return rv;
 }
@@ -406,9 +422,9 @@ bool geomdb_add( geomdesc_t* geomdesc, int numInst, bool istextured, bool ismono
 	// do we need to fetch from disk first?
 	const bool need_fetch = ( geomdesc->vdata == 0 && geomdesc->edata == 0 );
 	if ( need_fetch )
-		cached[ geomdb_sz ] = geomdb_fetch( geomdesc );
+		diskcache[ geomdb_sz ] = geomdb_fetch( geomdesc );
 	else
-		cached[ geomdb_sz ] = 0;
+		diskcache[ geomdb_sz ] = 0;
 
 	geoms[ geomdb_sz ] = geomdesc;
 	num_instances[ geomdb_sz ] = numInst;
@@ -464,7 +480,7 @@ bool geomdb_rmv( geomdesc_t* geomdesc )
 				num_instances[ i ] = num_instances[ geomdb_sz-1 ];
 				textured[ i ] = textured[ geomdb_sz-1 ];
 				monochrome[ i ] = monochrome[ geomdb_sz-1 ];
-				cached[ i ] = cached[ geomdb_sz-1 ];
+				diskcache[ i ] = diskcache[ geomdb_sz-1 ];
 				geomdb_sz--;
 			}
 			return true;
@@ -539,6 +555,10 @@ int geomdb_size( void )
 
 const char* geomdb_path = ".";
 
+/*
+ * Some platforms keeps the geometry data on disk, instead of static data in the binary.
+ * If the data is on-disk, we need to read it into memory.
+ */
 float* geomdb_fetch( geomdesc_t* geomdesc )
 {
 	float* cache = 0;
@@ -604,13 +624,13 @@ float* geomdb_fetch( geomdesc_t* geomdesc )
 
 bool geomdb_evict( int i )
 {
-	if ( cached[ i ] )
+	if ( diskcache[ i ] )
 	{
 		ASSERT( geoms[ i ] );
-		free( cached[ i ] );
-		cached[ i ] = 0;
+		free( diskcache[ i ] );
+		diskcache[ i ] = 0;
 		geoms[ i ]->vdata = geoms[ i ]->edata = 0;
-		LOGI( "Evicted %s(%d) from cached geometries.", geoms[i]->tag, i );
+		LOGI( "Evicted %s(%d) from disk-cached geometries.", geoms[i]->tag, i );
 		return true;
 	}
 	return false;
