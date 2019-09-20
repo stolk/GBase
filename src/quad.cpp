@@ -7,23 +7,20 @@
 #include "txdb.h"
 #include "glpr.h"
 
-static unsigned int vbo_size=0;
 static unsigned int vbo=0;
 #if defined( USE_VAO )
 static unsigned int vao=0;
 #endif
-static int numv=0;
-static float* vdata=0;
+static const int numv=6;
+static const int stride=4;
 
 
 void quad_init( void )
 {
 	if ( !vbo )
 	{
-		numv = 6;
-		const int stride = 4;
-		vbo_size = numv * sizeof(float) * stride;
-		vdata = (float*) malloc( vbo_size );
+		float vdata[ stride*numv ];
+		const unsigned int vbo_size = (unsigned int) sizeof(vdata);
 		float* writer = vdata;
 
 		*writer++ = 1.0;	// x
@@ -128,8 +125,6 @@ void quad_draw( const char* tag, vec3_t xlat, vec3_t rotx, vec3_t roty )
 	glBindBuffer( GL_ARRAY_BUFFER, vbo );
 	CHECK_OGL
 
-	const int stride = 4;
-
 	glVertexAttribPointer( ATTRIB_VERTEX, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*) 0 );
 	glEnableVertexAttribArray( ATTRIB_VERTEX );
     
@@ -167,7 +162,6 @@ void quad_draw_set( const char* tag, int cnt, const vec3_t* xlat, const vec3_t* 
 #else
 	glBindBuffer( GL_ARRAY_BUFFER, vbo );
 	CHECK_OGL
-	const int stride = 4;
 
 	glVertexAttribPointer( ATTRIB_VERTEX, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*) 0 );
 	glEnableVertexAttribArray( ATTRIB_VERTEX );
@@ -212,8 +206,6 @@ void quad_draw_dof( void )
 #else
 	glBindBuffer( GL_ARRAY_BUFFER, vbo );
 	CHECK_OGL
-
-	const int stride = 4;
 
 	glVertexAttribPointer( ATTRIB_VERTEX, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*) 0 );
 	glEnableVertexAttribArray( ATTRIB_VERTEX );
@@ -263,7 +255,6 @@ void quad_mk( unsigned int& vaobj, unsigned int& vbobj, float szx, float szy )
 	};
 	glBufferData( GL_ARRAY_BUFFER, sizeof(vertdata), vertdata, GL_STATIC_DRAW );
 	CHECK_OGL
-	const int stride = 4;
 	glVertexAttribPointer( ATTRIB_VERTEX, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*) 0 );
 	glVertexAttribPointer( ATTRIB_UV, 2, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*) ( 2 * sizeof(float) ) );
 	glEnableVertexAttribArray( ATTRIB_VERTEX );
