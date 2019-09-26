@@ -66,7 +66,7 @@ FILE* android_fopen(const char* fname, const char* mode)
 
 void android_list_assets( const char* dirName )
 {
-    LOGI( "Contents of asset directory %s:", dirName );
+	LOGI( "Contents of asset directory %s:", dirName );
 	AAssetDir* adir = AAssetManager_openDir( android_asset_manager, dirName );
 	if ( !adir )
 	{
