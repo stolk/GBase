@@ -73,7 +73,7 @@ double elapsed_ms_since_last_call( void )
 	clock_gettime( CLOCK_MONOTONIC, &curr );
 	const double delta_sec  = curr.tv_sec  - prev.tv_sec;
 	const double delta_nsec = curr.tv_nsec - prev.tv_nsec;
-	const double delta = delta_sec + delta_nsec/1e6;
+	const double delta = delta_sec*1000 + delta_nsec/1e6;
 	prev = curr;
 	return delta;
 #else
