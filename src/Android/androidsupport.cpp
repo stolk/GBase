@@ -226,28 +226,41 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 	androidsupport_engine_t* engine = &androidsupport_engine;
 	ASSERT( engine->app->window );
 
-	/*
-	 * Here specify the attributes of the desired configuration.
-	 * Below, we select an EGLConfig with at least 8 bits per color
-	 * component compatible with on-screen windows and 4x MSAA.
-	 */
+	(void) eglGetError();
+	EGLDisplay display = eglGetDisplay( EGL_DEFAULT_DISPLAY );
+	CHECKEGL( eglGetDisplay )
+	ASSERTM( display != EGL_NO_DISPLAY, "No default EGL display found. eglGetDisplay returned %p", EGL_NO_DISPLAY );
+
+	const EGLBoolean eglinitialized = eglInitialize(display, 0, 0);
+	CHECKEGL( eglInitialize )
+	ASSERT( eglinitialized )
+
+	// See what version of EGL we are running!
+	const char* versionstring = eglQueryString( display, EGL_VERSION );
+	const float version = atof( versionstring );
+	LOGI( "EGL version is %.1f", version );
+
+#if defined(USEES2)
+	const EGLint esbit = EGL_OPENGL_ES2_BIT;
+#else
+	const EGLint esbit = ( version >= 1.5 ) ? EGL_OPENGL_ES3_BIT : EGL_OPENGL_ES2_BIT;
+#endif
+	// Preferred: 8 bits per channel.
 	const EGLint attribs[] = {
-		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+		EGL_RENDERABLE_TYPE, esbit,
 		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
 		EGL_DEPTH_SIZE, withDepthBuffer ? 16 : 0,
 		EGL_BLUE_SIZE, 8,
 		EGL_GREEN_SIZE, 8,
 		EGL_RED_SIZE, 8,
 #if 0
-		// MSAA is super slow on some Android devices, so only use it with utmost care.
+	// MSAA is super slow on some Android devices, so only use it with utmost care.
 		EGL_SAMPLE_BUFFERS, 1,
 		EGL_SAMPLES, 4,
 #endif
 		EGL_NONE
 	};
-	/*
-	 * If we can't get that, then RGB565 will work as well.
-	 */
+	//If we can't get that, then RGB565 will work as well. Use es2 bit, not es3.
 	const EGLint attribs_fallback[] = {
 		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
 		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
@@ -262,15 +275,6 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 	EGLConfig config=0;
 	EGLSurface surface=0;
 	EGLContext context=0;
-
-	(void) eglGetError();
-	EGLDisplay display = eglGetDisplay( EGL_DEFAULT_DISPLAY );
-	CHECKEGL( eglGetDisplay )
-	ASSERTM( display != EGL_NO_DISPLAY, "No default EGL display found. eglGetDisplay returned %p", EGL_NO_DISPLAY );
-
-	const EGLBoolean eglinitialized = eglInitialize(display, 0, 0);
-	CHECKEGL( eglInitialize )
-	ASSERT( eglinitialized )
 
 	/* Here, the application chooses the configuration it desires. In this
 	 * sample, we have a very simplified selection process, where we pick
