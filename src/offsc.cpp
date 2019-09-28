@@ -339,6 +339,7 @@ void offsc_tag( int idx, const char* nm )
 }
 
 
+#if !defined( USEES2 )
 void offsc_resolve_msaa( int src, int dst )
 {
 	GLuint src_buf = offscFramebuffer[ src ];
@@ -353,6 +354,7 @@ void offsc_resolve_msaa( int src, int dst )
 	ASSERT( dsth >= srch );
 	glBlitFramebuffer(0, 0, srcw, srch, 0, 0, srcw, srch, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 }
+#endif
 
 
 void offsc_dump_framebuffer( const char* rgbname, const char* aname, const char* zname, int w, int h )
