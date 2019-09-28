@@ -16,13 +16,17 @@ camera.cpp
 light.cpp
 geomdb.cpp
 meshdb.cpp
-#offsc.cpp
 quad.cpp
 shdw.cpp
 tty.cpp
 txdb_stb.cpp
 wavdb.cpp
 sticksignal.cpp
+
+# FOR DIG
+offsc.cpp
+odb.cpp
+# -------
 
 Android/android_native_app_glue.c
 Android/androidsupport.cpp
@@ -35,3 +39,6 @@ target_include_directories(gbase PRIVATE
 	$ENV{HOME}/src/stb/
 )
 
+#target_compile_options(gbase PRIVATE
+#	"$<$<CONFIG:DEBUG>:-fsanitize=address>"
+#)
