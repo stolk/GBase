@@ -1,10 +1,12 @@
 // android fopen() trick by netguy204
 // http://www.50ply.com/blog/2013/01/19/loading-compressed-android-assets-with-file-pointer/
 
+#define _BSD_SOURCE 1
 #include <errno.h>
+#include <stdio.h>
 #include <android/asset_manager.h>
 
-#define __USE_BSD
+//#define __USE_BSD
 #include "android_fopen.h"
 #include "logx.h"
 
