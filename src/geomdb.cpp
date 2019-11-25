@@ -348,15 +348,15 @@ int geomdb_unload_vbos(void)
 int geomdb_load_vbos(void)
 {
 	int numLoaded=0;
-	if ( !geomdb_sz )
-		return 0;
+	if ( !geomdb_sz ) return 0;
 	LOGI( "loading VBOs of geomdb containing %d entries:", geomdb_sz );
 	char summation[ 2048 ] = {0};
 	int summwr = 0;
-
+	ASSERT(geomdb_sz < GEOMDB_MAX_SZ );
 	for ( int i=0; i<geomdb_sz; ++i )
 	{
 		geomdesc_t* geomdesc = geoms[ i ];
+		ASSERTM( geomdesc, "geomdb_load_vbos: geom %d (of %d) is null.", i, geomdb_sz );
 		bool created=false;
 #if !defined( USEES2 )
 		if ( num_instances[ i ] > 1 )
@@ -369,7 +369,7 @@ int geomdb_load_vbos(void)
 			created = create_vbo( geomdesc, textured[ i ] );
 
 		// Add to summation.
-		const size_t taglen = strlen( geomdesc->tag );
+		const size_t taglen = geomdesc->tag ? strlen( geomdesc->tag ) : 0;
 		ASSERTM
 		(
 			taglen<40,
@@ -377,7 +377,7 @@ int geomdb_load_vbos(void)
 			(int)taglen, geomdesc->tag[0], geomdesc->tag[1], geomdesc->tag[2], geomdesc->tag[3],  geomdesc->tag[4],  geomdesc->tag[5], geomdesc->tag[6], geomdesc->tag[7]
 		);
 		const char* s = geomdesc->tag;
-		while (*s)
+		while (s && *s)
 		{
 			ASSERTM( summwr<2047, "geomdb with %d entries cannot be summerized. i=%d", geomdb_sz, i );
 			summation[ summwr++ ] = *s++;
