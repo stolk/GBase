@@ -23,8 +23,9 @@ struct android_app;
 typedef struct
 {
 	struct android_app* app;
-	int animating;
-	int ready;
+	int animating;		//!< If non-zero, we are between RESUME and PAUSE events.
+	int ready;		//!< If non-zero, the window has been created.
+	int focused;		//!< If non-zero, our window has focus.
 	EGLDisplay display;
 	EGLSurface surface;
 	EGLContext context;
