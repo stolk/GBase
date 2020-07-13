@@ -605,6 +605,7 @@ float* geomdb_fetch( geomdesc_t* geomdesc )
 				FILE *f = fopen( fname, "rb" );
 				ASSERT( f );
 				cache = (float*) malloc( (int) filestats.st_size );
+				ASSERTM( cache, "Out of memory allocating %d bytes for geometry %s with %d triangles and %d edges.", (int) filestats.st_size, geomdesc->tag, geomdesc->numt, geomdesc->nume );
 				const int numread = (int) fread( cache, sizeof(float), numfloats, f );
 				ASSERT( numread == numfloats );
 				geomdesc->vdata = cache;
