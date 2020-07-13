@@ -60,7 +60,7 @@ mat44_t odb_adjustTrf = mat44_t( adjustValues );
 void odb_create( dWorldID worldid, dSpaceID spaceid )
 {
 	int numgeoms = dSpaceGetNumGeoms( spaceid );
-	LOGI( "odb_create(%p) with space containing %d geoms.", spaceid, numgeoms );
+	LOGI( "odb_create(%p) with space containing %d geoms.", (void*)spaceid, numgeoms );
 	odb_world = worldid;
 	odb_rootspace = spaceid;
 	odb_objCnt = 0;
