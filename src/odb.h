@@ -28,7 +28,8 @@ const int ODB_TYPE_DIRT		= 0x10000;
 const int ODB_TYPE_TERRAIN	= 0x20000;
 const int ODB_TYPE_STRUCTURE	= 0x30000;
 const int ODB_TYPE_LEVELBLOCK	= 0x40000;
-const int ODB_TYPE_AMMO		= 0x80000;
+const int ODB_TYPE_AMMO		= 0x50000;
+const int ODB_TYPE_LASER	= 0x60000;
 
 #define ASSIGN_DATA_TO_GEOM( GEOM, TYPE, NR ) \
 	dGeomSetData( GEOM, (void*)(long)( NR | TYPE ) )
