@@ -9,7 +9,6 @@
 static mat44_t trf;
 static mat44_t view;		// view transformation is the inverse of the light transformation.
 static mat44_t proj;		// projection transformation (ortho cam)
-static mat44_t viewproj;	// view * proj tranform (cached multiplication)
 	
 static float  projectionSize;
 static vec3_t pos;
@@ -22,7 +21,6 @@ void light_init(void)
 	trf.identity();
 	view.identity();
 	proj.identity();
-	viewproj.identity();
 
 	pos = vec3_t( 0, 0, 50 );
 	coi = vec3_t( 0, 0, 0 );
@@ -136,7 +134,6 @@ void light_update(float dt)
 		trf = mat44_t( m );
 
 		view = trf.inverse();
-		viewproj = proj * view;
 
 		validViewMat = true;
 	}
