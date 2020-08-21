@@ -15,6 +15,7 @@ typedef struct
 	mat44_t	camview; 
 	mat44_t camproj;
 	mat44_t lightview;
+	mat44_t auxil0view;
 	mat44_t lightproj;
 } rendercontext_t;
 
