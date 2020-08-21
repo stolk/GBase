@@ -276,12 +276,12 @@ void shdw_dump( int nr )
 	const int w = SHADOWBUFFERSIZE;
 	const int h = w;
 	const GLuint t0 = shdw_texture;
-	shdw_use();
+	shdw_use( nr );
 	char fname[256];
 	// write out depth map
 	if (t0)
 	{
-		snprintf(fname, sizeof(fname), "shdw-depth.pgm");
+		snprintf(fname, sizeof(fname), "shdw-depth-%d.pgm", nr);
 		FILE* f = fopen(fname, "wb");
 		fprintf(f, "P2\n%d %d\n65535\n", w, h);
 		float* vals = new float[w*h];
@@ -301,6 +301,7 @@ void shdw_dump( int nr )
 		}
 		delete [] vals;
 		fclose(f);
-		LOGI("Wrote depth map to %s", fname);
+		LOGI("Wrote depth map with id 0x%x to %s", t0, fname);
 	}
 }
+
