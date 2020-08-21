@@ -74,7 +74,7 @@ extern void odb_draw_main( const rendercontext_t& rc );
 extern void odb_draw_edge( const rendercontext_t& rc );
 
 //! Draws the faces in the lightview.
-extern void odb_draw_shdw( const rendercontext_t& rc );
+extern void odb_draw_shdw( const rendercontext_t& rc, int lightnr=0 );
 
 //! Find named object in the db and return its index.
 extern int  odb_lookup( const char* name );
