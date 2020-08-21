@@ -13,9 +13,18 @@
 
 
 #define SHADOWBUFFERSIZE	2048
+#define MAXBUFS			2
+
+static GLuint	shdw_textures[MAXBUFS] = { 0,0 };
+
+static GLuint	shadowFramebuffers[MAXBUFS] = { 0,0, };
+
+static unsigned int* colorbuffermems[MAXBUFS] = { 0,0, };
+static unsigned int* depthbuffermems[MAXBUFS] = { 0,0, };
+
+//unsigned int shdw_texture=0;
 
 
-unsigned int shdw_texture=0;
 bool shdw_completeframebufferfix=
 #if defined( JS ) || defined( OCVR )
 	true;
@@ -23,16 +32,14 @@ bool shdw_completeframebufferfix=
 	false;
 #endif
 
-static GLuint	shadowFramebuffer=0;
-static GLuint	shadowDepth=0;		// Only used if GL implementation does not support depth texture
 
 
-static unsigned int* colorbuffermem=0;
-static unsigned int* depthbuffermem=0;
-
-bool shdw_createFramebuffer( bool supportsDepthTexture )
+bool shdw_createFramebuffer( bool supportsDepthTexture, int nr )
 {
-	shadowDepth = 0;
+	GLuint& shadowFramebuffer = shadowFramebuffers[nr];
+	GLuint& shdw_texture = shdw_textures[nr];
+	unsigned int*& colorbuffermem = colorbuffermems[nr];
+	unsigned int*& depthbuffermem = depthbuffermems[nr];
 
 	// create the framebuffer
 	glGenFramebuffers( 1, &shadowFramebuffer );
@@ -57,7 +64,7 @@ bool shdw_createFramebuffer( bool supportsDepthTexture )
 		LOGE( "No depth texture support." );
 		ASSERT( supportsDepthTexture );
 #else
-		colorbuffermem = (unsigned int*)malloc( 2 * sizeof(unsigned int) * SHADOWBUFFERSIZE * SHADOWBUFFERSIZE );
+		colorbuffermem = (unsigned int*)malloc( 1 * sizeof(unsigned int) * SHADOWBUFFERSIZE * SHADOWBUFFERSIZE );
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, SHADOWBUFFERSIZE, SHADOWBUFFERSIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, colorbuffermem );
 		CHECK_OGL_RELEASE
 #endif
@@ -193,8 +200,13 @@ bool shdw_createFramebuffer( bool supportsDepthTexture )
 }
 
 
-void shdw_destroyFramebuffer( void )
+void shdw_destroyFramebuffer( int nr )
 {
+	GLuint& shadowFramebuffer = shadowFramebuffers[nr];
+	GLuint& shdw_texture = shdw_textures[nr];
+	unsigned int*& colorbuffermem = colorbuffermems[nr];
+	unsigned int*& depthbuffermem = depthbuffermems[nr];
+
 	if ( !shadowFramebuffer ) 
 	{
 		LOGE( "There is no shadowFramebuffer to destroy." );
@@ -214,14 +226,6 @@ void shdw_destroyFramebuffer( void )
 	colorbuffermem = 0;
 	shdw_texture = 0;
 
-	if ( shadowDepth )
-	{
-		glBindRenderbuffer( GL_RENDERBUFFER, 0 ) ;
-		glDeleteRenderbuffers( 1, &shadowDepth );
-		CHECK_OGL
-		shadowDepth = 0;
-	}
-
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 	CHECK_OGL
 	glDeleteFramebuffers( 1, &shadowFramebuffer );
@@ -232,23 +236,31 @@ void shdw_destroyFramebuffer( void )
 }
 
 
-void shdw_use( void )
+void shdw_use( int nr )
 {
+	GLuint& shadowFramebuffer = shadowFramebuffers[nr];
+
+	ASSERT(shadowFramebuffer>0);
+
 	glBindFramebuffer( GL_FRAMEBUFFER, shadowFramebuffer );
 	CHECK_OGL
-
-	// If depth textures are not supported, we need to bind a separate depth buffer to the rgba texture.
-	if ( shadowDepth )
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, shadowDepth );
 
 	glViewport(0,0,SHADOWBUFFERSIZE,SHADOWBUFFERSIZE);
 	CHECK_OGL
 }
 
 
+unsigned int shdw_texture(int nr)
+{
+	return shdw_textures[nr];
+}
+
+
 void shdw_invalidate( void )
 {
 #if defined(USEES3)
+	GLuint& shadowFramebuffer = shadowFramebuffers[nr];
+
 	glBindFramebuffer( GL_FRAMEBUFFER, shadowFramebuffer );
 	GLenum attachments[ 1 ] = { GL_DEPTH_ATTACHMENT };
 	glInvalidateFramebuffer( GL_FRAMEBUFFER, 1, attachments );
@@ -257,8 +269,10 @@ void shdw_invalidate( void )
 }
 
 
-void shdw_dump( void )
+void shdw_dump( int nr )
 {
+	GLuint& shdw_texture = shdw_textures[nr];
+
 	const int w = SHADOWBUFFERSIZE;
 	const int h = w;
 	const GLuint t0 = shdw_texture;
