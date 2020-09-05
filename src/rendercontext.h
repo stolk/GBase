@@ -11,12 +11,22 @@
 
 typedef struct
 {
+	// Camera
 	mat44_t camtrf;
 	mat44_t	camview; 
 	mat44_t camproj;
+
+	// First light
 	mat44_t lightview;
-	mat44_t auxil0view;
 	mat44_t lightproj;
+
+	// Second light
+	mat44_t auxil0view;
+	mat44_t auxil0proj;
+
+	// Third light
+	mat44_t auxil1view;
+	mat44_t auxil1proj;
 } rendercontext_t;
 
 
