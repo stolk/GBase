@@ -241,10 +241,13 @@ void odb_update( float dt, vec3_t focuspt, float culldist )
 //! Draw triangles of the objects in the db.
 void odb_draw_main( const rendercontext_t& rc )
 {
-	const mat44_t camViewProjMat    = rc.camproj * rc.camview;
-	const mat44_t lightViewProjMat  = odb_adjustTrf * rc.lightproj * rc.lightview;
-#if defined(TWOLIGHTS)
-	const mat44_t auxil0ViewProjMat = odb_adjustTrf * rc.lightproj * rc.auxil0view;
+	const mat44_t camViewProjMat    = rc.camproj    * rc.camview;
+	const mat44_t lightViewProjMat  = odb_adjustTrf * rc.lightproj  * rc.lightview;
+#if defined(TWOLIGHTS) || defined(THREELIGHTS)
+	const mat44_t auxil0ViewProjMat = odb_adjustTrf * rc.auxil0proj * rc.auxil0view;
+#endif
+#if defined(THREELIGHTS)
+	const mat44_t auxil1ViewProjMat = odb_adjustTrf * rc.auxil1proj * rc.auxil1view;
 #endif
 	for ( int i=0; i<odb_objCnt; ++i )
 	{
@@ -263,13 +266,21 @@ void odb_draw_main( const rendercontext_t& rc )
 			glUniformMatrix4fv( mlvpUniform, 1, false, modelLightViewProjMat.data );
 			glUniformMatrix4fv( mlvUniform,  1, false, modelLightViewMat.data );
 
-#if defined(TWOLIGHTS)
+#if defined(TWOLIGHTS) || defined(THREELIGHTS)
 			mat44_t modelAuxil0ViewMat	= rc.auxil0view * trf;
 			mat44_t modelAuxil0ViewProjMat	= auxil0ViewProjMat * trf;
-			static int mavpUniform = glpr_uniform( "modelauxil0viewprojmat" );
-			static int mavUniform  = glpr_uniform( "modelauxil0viewmat" );
-			glUniformMatrix4fv( mavpUniform, 1, false, modelAuxil0ViewProjMat.data );
-			glUniformMatrix4fv( mavUniform,  1, false, modelAuxil0ViewMat.data );
+			static int ma0vpUniform = glpr_uniform( "modelauxil0viewprojmat" );
+			static int ma0vUniform  = glpr_uniform( "modelauxil0viewmat" );
+			glUniformMatrix4fv( ma0vpUniform, 1, false, modelAuxil0ViewProjMat.data );
+			glUniformMatrix4fv( ma0vUniform,  1, false, modelAuxil0ViewMat.data );
+#endif
+#if defined(THREELIGHTS)
+			mat44_t modelAuxil1ViewMat	= rc.auxil1view * trf;
+			mat44_t modelAuxil1ViewProjMat	= auxil1ViewProjMat * trf;
+			static int ma1vpUniform = glpr_uniform( "modelauxil1viewprojmat" );
+			static int ma1vUniform  = glpr_uniform( "modelauxil1viewmat" );
+			glUniformMatrix4fv( ma1vpUniform, 1, false, modelAuxil1ViewProjMat.data );
+			glUniformMatrix4fv( ma1vUniform,  1, false, modelAuxil1ViewMat.data );
 #endif
 
 #ifdef USE_VAO
@@ -303,9 +314,10 @@ void odb_draw_main( const rendercontext_t& rc )
 //! Draw the triangles of the objects in the db, into the shadow map.
 void odb_draw_shdw( const rendercontext_t& rc, int lightnr )
 {
-#if defined TWOLIGHTS
-	const mat44_t& lightview = lightnr ? rc.auxil0view : rc.lightview;
-	const mat44_t lightViewProjMat = rc.lightproj * lightview;
+#if defined(TWOLIGHTS) || defined(THREELIGHTS)
+	const mat44_t& lightview = lightnr==2 ? rc.auxil1view : ( lightnr==1 ? rc.auxil0view : rc.lightview );
+	const mat44_t& lightproj = lightnr==2 ? rc.auxil1proj : ( lightnr==1 ? rc.auxil0proj : rc.lightproj );
+	const mat44_t  lightViewProjMat = lightproj * lightview;
 #else
 	ASSERT(lightnr==0);
 	const mat44_t lightViewProjMat = rc.lightproj * rc.lightview;
