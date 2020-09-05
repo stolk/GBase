@@ -5,7 +5,11 @@
 #ifndef SHDW_H
 #define SHDW_H
 
-extern bool shdw_createFramebuffer( bool supportsDepthTexture, int nr=0 );
+#ifndef SHADOWBUFFERSIZE
+#	define SHADOWBUFFERSIZE		2048
+#endif
+
+extern bool shdw_createFramebuffer( bool supportsDepthTexture, int nr=0, int w=SHADOWBUFFERSIZE, int h=SHADOWBUFFERSIZE );
 
 extern void shdw_destroyFramebuffer( int nr=0 );
 

@@ -12,15 +12,16 @@
 #include "logx.h"
 
 
-#define SHADOWBUFFERSIZE	2048
-#define MAXBUFS			2
+#if !defined(MAXSHADOWBUFS)
+#	define MAXSHADOWBUFS			2
+#endif
 
-static GLuint	shdw_textures[MAXBUFS] = { 0,0 };
+static int	shdw_w[MAXSHADOWBUFS];
+static int	shdw_h[MAXSHADOWBUFS];
 
-static GLuint	shadowFramebuffers[MAXBUFS] = { 0,0, };
+static GLuint	shdw_textures[MAXSHADOWBUFS] = { 0,0 };
 
-static unsigned int* colorbuffermems[MAXBUFS] = { 0,0, };
-static unsigned int* depthbuffermems[MAXBUFS] = { 0,0, };
+static GLuint	shadowFramebuffers[MAXSHADOWBUFS] = { 0,0, };
 
 //unsigned int shdw_texture=0;
 
@@ -34,12 +35,14 @@ bool shdw_completeframebufferfix=
 
 
 
-bool shdw_createFramebuffer( bool supportsDepthTexture, int nr )
+bool shdw_createFramebuffer( bool supportsDepthTexture, int nr, int shadoww, int shadowh )
 {
+	ASSERT( nr>=0 && nr<MAXSHADOWBUFS );
 	GLuint& shadowFramebuffer = shadowFramebuffers[nr];
 	GLuint& shdw_texture = shdw_textures[nr];
-	unsigned int*& colorbuffermem = colorbuffermems[nr];
-	unsigned int*& depthbuffermem = depthbuffermems[nr];
+
+	shdw_w[nr] = shadoww;
+	shdw_h[nr] = shadowh;
 
 	// create the framebuffer
 	glGenFramebuffers( 1, &shadowFramebuffer );
@@ -64,25 +67,23 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr )
 		LOGE( "No depth texture support." );
 		ASSERT( supportsDepthTexture );
 #else
-		colorbuffermem = (unsigned int*)malloc( 1 * sizeof(unsigned int) * SHADOWBUFFERSIZE * SHADOWBUFFERSIZE );
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, SHADOWBUFFERSIZE, SHADOWBUFFERSIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, colorbuffermem );
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, shadoww, shadowh, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 		CHECK_OGL_RELEASE
 #endif
 	}
 	else
 	{
 		GLvoid* pixels = 0;
-#if defined( IPHNX )
-		pixels = (unsigned int*)malloc( sizeof(int) * SHADOWBUFFERSIZE * SHADOWBUFFERSIZE );
-#endif
-
 #if defined( USEES2 )
 		// OpenGLES 2 does not have GL_DEPTH_COMPONENT24.
 		GLint internal_fmt = GL_DEPTH_COMPONENT;
+		GLint type = GL_UNSIGNED_INT;
 #elif defined( USECOREPROFILE ) || defined( USEES3 )
 		GLint internal_fmt = GL_DEPTH_COMPONENT32F;
+		GLint type = GL_FLOAT;
 #else
 		GLint internal_fmt = GL_DEPTH_COMPONENT24;
+		GLint type = GL_UNSIGNED_INT;
 #endif
 
 #if ( defined( IPHN ) || defined( APTV ) || defined( ANDROID ) ) && defined( USEES3 )
@@ -94,10 +95,10 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr )
 			GL_TEXTURE_2D,				// target
 			0,					// level
 			internal_fmt,				// internal format
-		 	SHADOWBUFFERSIZE, SHADOWBUFFERSIZE,	// width, height
+		 	shadoww, shadowh,			// width, height
 		 	0,					// border
 		 	GL_DEPTH_COMPONENT,			// format
-		 	GL_UNSIGNED_INT,			// type
+		 	type,					// type
 		 	pixels					// pixels
 		);
 		CHECK_OGL_RELEASE
@@ -136,9 +137,9 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr )
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,  GL_CLAMP_TO_EDGE );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 			CHECK_OGL_RELEASE
-			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, SHADOWBUFFERSIZE, SHADOWBUFFERSIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, shadoww, shadowh, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 			CHECK_OGL_RELEASE
 			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colr_texture, 0 );
 			LOGI( "Attached colour texture with id 0x%x as colour to shadowFramebuffer with id 0x%x", colr_texture, shadowFramebuffer );
@@ -194,7 +195,7 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr )
 	}
 	else
 	{
-		LOGI( "Got a complete shadowFramebuffer object with id %x", shadowFramebuffer );
+		LOGI( "Got a complete shadowFramebuffer object with id %x of size %dx%d", shadowFramebuffer, shadoww, shadowh );
 		return true;
 	}
 }
@@ -204,8 +205,6 @@ void shdw_destroyFramebuffer( int nr )
 {
 	GLuint& shadowFramebuffer = shadowFramebuffers[nr];
 	GLuint& shdw_texture = shdw_textures[nr];
-	unsigned int*& colorbuffermem = colorbuffermems[nr];
-	unsigned int*& depthbuffermem = depthbuffermems[nr];
 
 	if ( !shadowFramebuffer ) 
 	{
@@ -220,10 +219,6 @@ void shdw_destroyFramebuffer( int nr )
 	// delete the texture
 	glDeleteTextures( 1, &shdw_texture );
 	CHECK_OGL
-	if ( depthbuffermem ) free( depthbuffermem );
-	depthbuffermem = 0;
-	if ( colorbuffermem ) free( colorbuffermem );
-	colorbuffermem = 0;
 	shdw_texture = 0;
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -240,12 +235,12 @@ void shdw_use( int nr )
 {
 	GLuint& shadowFramebuffer = shadowFramebuffers[nr];
 
-	ASSERT(shadowFramebuffer>0);
+	ASSERTM(shadowFramebuffer>0, "No valid framebuffer(%d) for shdw slot %d", shadowFramebuffer, nr);
 
 	glBindFramebuffer( GL_FRAMEBUFFER, shadowFramebuffer );
 	CHECK_OGL
 
-	glViewport(0,0,SHADOWBUFFERSIZE,SHADOWBUFFERSIZE);
+	glViewport(0,0,shdw_w[nr],shdw_h[nr]);
 	CHECK_OGL
 }
 
@@ -271,10 +266,14 @@ void shdw_invalidate( void )
 
 void shdw_dump( int nr )
 {
+	ASSERT( nr>=0 && nr<MAXSHADOWBUFS );
+
 	GLuint& shdw_texture = shdw_textures[nr];
 
-	const int w = SHADOWBUFFERSIZE;
-	const int h = w;
+	const int w = shdw_w[nr];
+	const int h = shdw_h[nr];
+	ASSERT(w>0);
+	ASSERT(h>0);
 	const GLuint t0 = shdw_texture;
 	shdw_use( nr );
 	char fname[256];
@@ -286,6 +285,7 @@ void shdw_dump( int nr )
 		fprintf(f, "P2\n%d %d\n65535\n", w, h);
 		float* vals = new float[w*h];
 		glReadPixels(0, 0, w, h, GL_DEPTH_COMPONENT, GL_FLOAT, vals);
+		CHECK_OGL
 		for (int y=0; y<h; ++y)
 		{
 			float* reader = vals + (h-1-y)*w;
