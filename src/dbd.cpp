@@ -11,7 +11,7 @@
 #include "glpr.h"
 
 
-static const int maxv = 32768;
+static const int maxv = 128*32768;
 static int numv = 0;
 static float vdata[ maxv ][ 3 ];
 
@@ -87,6 +87,29 @@ void dbd_circlez( const mat44_t& m )
 		const vec4_t xp1 = m * pts[ i+1 ];
 		dbd_line( vec3_t(xp0[0],xp0[1],xp0[2]), vec3_t(xp1[0],xp1[1],xp1[2]) );
 	}
+}
+
+
+void dbd_octaeder( const vec3_t& p, float sz )
+{
+	const vec3_t x0 = p - vec3_t(sz,0,0);
+	const vec3_t x1 = p + vec3_t(sz,0,0);
+	const vec3_t y0 = p - vec3_t(0,sz,0);
+	const vec3_t y1 = p + vec3_t(0,sz,0);
+	const vec3_t z0 = p - vec3_t(0,0,sz);
+	const vec3_t z1 = p + vec3_t(0,0,sz);
+	dbd_line(x0,y0);
+	dbd_line(y0,x1);
+	dbd_line(x1,y1);
+	dbd_line(y1,x0);
+	dbd_line(x0,z0);
+	dbd_line(x1,z0);
+	dbd_line(y0,z0);
+	dbd_line(y1,z0);
+	dbd_line(x0,z1);
+	dbd_line(x1,z1);
+	dbd_line(y0,z1);
+	dbd_line(y1,z1);
 }
 
 
