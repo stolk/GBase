@@ -111,6 +111,8 @@ int glpr_uniform( const char* nm )
 	{
 		if ( !strcmp( nm, glpr_name[ i ] ) )
 			return glpr_unif[ i ];
+		if ( glpr_unif_prog[ i ] != glpr_usedprogram )
+			break;
 	}
 	ASSERTM( 0, "uniform '%s' for program %u not found. Searched [%d,%d). Program Count: %d", nm, glpr_usedprogram, glpr_searchindex, glpr_numu, glpr_numprograms );
 	return -1;
