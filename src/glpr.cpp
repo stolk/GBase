@@ -107,14 +107,15 @@ void glpr_use( unsigned int program )
 int glpr_uniform( const char* nm )
 {
 	ASSERTM( glpr_usedprogram > 0, "Cannot get uniform %s if glpr_use was not called.", nm );
-	for ( int i=glpr_searchindex; i<glpr_numu; ++i )
+	int i;
+	for ( i=glpr_searchindex; i<glpr_numu; ++i )
 	{
 		if ( !strcmp( nm, glpr_name[ i ] ) )
 			return glpr_unif[ i ];
 		if ( glpr_unif_prog[ i ] != glpr_usedprogram )
 			break;
 	}
-	ASSERTM( 0, "uniform '%s' for program %u not found. Searched [%d,%d). Program Count: %d", nm, glpr_usedprogram, glpr_searchindex, glpr_numu, glpr_numprograms );
+	ASSERTM( 0, "uniform '%s' for program %u not found. Searched [%d,%d). Program Count: %d", nm, glpr_usedprogram, glpr_searchindex, i, glpr_numprograms );
 	return -1;
 }
 
