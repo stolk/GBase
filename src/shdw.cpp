@@ -23,6 +23,9 @@ static GLuint	shdw_textures[MAXSHADOWBUFS] = { 0,0 };
 
 static GLuint	shadowFramebuffers[MAXSHADOWBUFS] = { 0,0, };
 
+bool shdw_use_hardware_depth_compare = false;
+bool shdw_use_hardware_pcf = false;
+
 //unsigned int shdw_texture=0;
 
 
@@ -56,10 +59,16 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr, int shadoww, int
 	CHECK_OGL_RELEASE
 	glBindTexture( GL_TEXTURE_2D, shdw_texture );
 	CHECK_OGL_RELEASE
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+	if ( shdw_use_hardware_depth_compare )
+	{
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_GREATER );
+	}
+	const GLint filter = shdw_use_hardware_pcf ? GL_LINEAR : GL_NEAREST;
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter );
 	CHECK_OGL_RELEASE
 	if ( !supportsDepthTexture )
 	{

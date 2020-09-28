@@ -23,4 +23,8 @@ extern unsigned int shdw_texture( int nr=0);
 
 extern bool shdw_completeframebufferfix;
 
+extern bool shdw_use_hardware_depth_compare;
+
+extern bool shdw_use_hardware_pcf;
+
 #endif
