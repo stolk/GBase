@@ -58,14 +58,32 @@ gl_debug_proc( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei l
 		severity_str = "Unknown";
 	}
 
+	const bool warn_only = 
+		type == GL_DEBUG_TYPE_PERFORMANCE ||
+		type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR ||
+		severity == GL_DEBUG_SEVERITY_NOTIFICATION ||
+		severity == GL_DEBUG_SEVERITY_LOW;
+
 	if ( !strstr( message, "usage hint is" ) )
 	{
-		LOGE
-		(
-			"[%s][%s]{%s}: %.*s",
-			source_str, type_str, severity_str,
-			length, message
-		);
+		if ( warn_only )
+		{
+			LOGW
+			(
+				"[%s][%s]{%s}: %.*s",
+				source_str, type_str, severity_str,
+				length, message
+			);
+		}
+		else
+		{
+			LOGE
+			(
+				"[%s][%s]{%s}: %.*s",
+				source_str, type_str, severity_str,
+				length, message
+			);
+		}
 	}
 }
 
