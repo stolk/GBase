@@ -13,7 +13,7 @@ typedef struct
 {
 	// Camera
 	mat44_t camtrf;
-	mat44_t	camview; 
+	mat44_t	camview;
 	mat44_t camproj;
 
 	// First light

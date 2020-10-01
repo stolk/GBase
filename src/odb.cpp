@@ -256,15 +256,20 @@ void odb_draw_main( const rendercontext_t& rc )
 		if ( geomdesc && geomdesc->numt && !odb_culled[ i ] )
 		{
 			mat44_t modelCamViewProjMat	= camViewProjMat * trf;
+			mat44_t modelLightViewProjMat	= lightViewProjMat * trf;
+
 			static int mcvpUniform = glpr_uniform( "modelcamviewprojmat" );
 			glUniformMatrix4fv( mcvpUniform, 1, false, modelCamViewProjMat.data );
 
-			mat44_t modelLightViewMat	= rc.lightview * trf;
-			mat44_t modelLightViewProjMat	= lightViewProjMat * trf;
-			static int mlvpUniform = glpr_uniform( "modellightviewprojmat" );
+#if defined(SPECULARLIGHT)
+			static int mcvUniform  = glpr_uniform( "modelcamviewmat" );
+			glUniformMatrix4fv( mcvUniform,  1, false, (rc.camview * trf).data );
+#endif
 			static int mlvUniform  = glpr_uniform( "modellightviewmat" );
+			glUniformMatrix4fv( mlvUniform,  1, false, (rc.lightview * trf).data );
+
+			static int mlvpUniform = glpr_uniform( "modellightviewprojmat" );
 			glUniformMatrix4fv( mlvpUniform, 1, false, modelLightViewProjMat.data );
-			glUniformMatrix4fv( mlvUniform,  1, false, modelLightViewMat.data );
 
 #if defined(TWOLIGHTS) || defined(THREELIGHTS)
 			mat44_t modelAuxil0ViewMat	= rc.auxil0view * trf;
