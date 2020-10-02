@@ -84,6 +84,12 @@ void light_getViewTransform(mat44_t& mat)
 }
 
 
+void light_getTransform(mat44_t& mat)
+{
+	memcpy( mat, trf, sizeof(mat44_t) );
+}
+
+
 void light_setPos(const vec3_t& p)
 {
 	pos = p;

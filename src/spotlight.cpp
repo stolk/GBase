@@ -110,6 +110,12 @@ void spotlight_getViewTransform(mat44_t& mat)
 }
 
 
+void spotlight_getTransform(mat44_t& mat)
+{
+	memcpy( mat, sl_trf, sizeof(mat44_t) );
+}
+
+
 void spotlight_setPos(const vec3_t& p)
 {
 	sl_pos = p;

@@ -15,6 +15,8 @@ extern void spotlight_getProjTransform(mat44_t& mat);
 
 extern void spotlight_getViewTransform(mat44_t& mat);
 
+extern void spotlight_getTransform(mat44_t& mat);
+
 extern void spotlight_setPos(const vec3_t& p);
 
 extern vec3_t spotlight_pos(void);

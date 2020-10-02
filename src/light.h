@@ -13,6 +13,8 @@ extern void light_setProjectionSize( float projsz, float near, float far );
 
 extern void light_getProjTransform(mat44_t& mat);
 
+extern void light_getTransform(mat44_t& mat);
+
 extern void light_getViewTransform(mat44_t& mat);
 
 extern void light_setPos(const vec3_t& p);
