@@ -22,14 +22,14 @@ typedef struct
 	mat44_t lightproj;
 
 	// Second light
-	mat44_t auxil0trf;
-	mat44_t auxil0view;
-	mat44_t auxil0proj;
+	mat44_t auxi0trf;
+	mat44_t auxi0view;
+	mat44_t auxi0proj;
 
 	// Third light
-	mat44_t auxil1trf;
-	mat44_t auxil1view;
-	mat44_t auxil1proj;
+	mat44_t auxi1trf;
+	mat44_t auxi1view;
+	mat44_t auxi1proj;
 } rendercontext_t;
 
 
