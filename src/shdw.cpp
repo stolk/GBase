@@ -40,7 +40,7 @@ bool shdw_completeframebufferfix=
 
 bool shdw_createFramebuffer( bool supportsDepthTexture, int nr, int shadoww, int shadowh )
 {
-	ASSERT( nr>=0 && nr<MAXSHADOWBUFS );
+	ASSERTM( nr>=0 && nr<MAXSHADOWBUFS, "Shadow buffer nr %d is not in range [0,%d]", nr, MAXSHADOWBUFS );
 	GLuint& shadowFramebuffer = shadowFramebuffers[nr];
 	GLuint& shdw_texture = shdw_textures[nr];
 
