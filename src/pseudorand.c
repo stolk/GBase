@@ -29,12 +29,12 @@ uint64_t pseudorand( void )
 float pseudorand_float( void )
 {
 	uint64_t r = pseudorand();
-	return ((float)r) / 0xffffffffffffffff;
+	return (float)r / (float)0xffffffffffffffff;
 }
 
 
 float pseudorand_range( float lo, float hi )
 {
 	const uint64_t r = pseudorand();
-	return lo + ((float)r) / ( 0xffffffffffffffff / (hi-lo) );
+	return lo + (float)r / ( (float)0xffffffffffffffff / (hi-lo) );
 }
