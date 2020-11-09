@@ -301,6 +301,10 @@ unsigned int glpr_load( const char* name, const char* src_vsh, const char* src_f
 	// specific to FTT
 	numbound += bind_attribute( program, attributes, "uvshift", ATTRIB_UVSHIFT );
 	CHECK_OGL_RELEASE
+	// specific to Ring Miner
+	numbound += bind_attribute( program, attributes, "boardpos", ATTRIB_BOARDPOS );
+	numbound += bind_attribute( program, attributes, "ore", ATTRIB_ORE );
+
 	//LOGI( "bound %d attributes for shader %s", numbound, name );
 	(void)numbound;
 
