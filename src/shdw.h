@@ -27,4 +27,6 @@ extern bool shdw_use_hardware_depth_compare;
 
 extern bool shdw_use_hardware_pcf;
 
+extern bool shdw_verbose;
+
 #endif

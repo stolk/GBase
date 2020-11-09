@@ -25,6 +25,7 @@ static GLuint	shadowFramebuffers[MAXSHADOWBUFS] = { 0,0, };
 
 bool shdw_use_hardware_depth_compare = false;
 bool shdw_use_hardware_pcf = false;
+bool shdw_verbose = true;
 
 //unsigned int shdw_texture=0;
 
@@ -35,7 +36,6 @@ bool shdw_completeframebufferfix=
 #else
 	false;
 #endif
-
 
 
 bool shdw_createFramebuffer( bool supportsDepthTexture, int nr, int shadoww, int shadowh )
@@ -128,13 +128,15 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr, int shadoww, int
 	{
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shdw_texture, 0 );
 		CHECK_OGL_RELEASE
-		LOGI( "Attached shadow texture with id 0x%x as color to shadowFramebuffer with id 0x%x", shdw_texture, shadowFramebuffer );
+		if ( shdw_verbose )
+			LOGI( "Attached shadow texture with id 0x%x as color to shadowFramebuffer with id 0x%x", shdw_texture, shadowFramebuffer );
 	}
 	else
 	{
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shdw_texture, 0 );
 		CHECK_OGL_RELEASE
-		LOGI( "Attached shadow texture with id 0x%x as depth to shadowFramebuffer with id 0x%x", shdw_texture, shadowFramebuffer );
+		if ( shdw_verbose )
+			LOGI( "Attached shadow texture with id 0x%x as depth to shadowFramebuffer with id 0x%x", shdw_texture, shadowFramebuffer );
 		if ( shdw_completeframebufferfix )
 		{
 			// Workaround for incomplete framebuffer thing in browsers. May not always work though :-(
@@ -151,7 +153,8 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr, int shadoww, int
 			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, shadoww, shadowh, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 			CHECK_OGL_RELEASE
 			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colr_texture, 0 );
-			LOGI( "Attached colour texture with id 0x%x as colour to shadowFramebuffer with id 0x%x", colr_texture, shadowFramebuffer );
+			if ( shdw_verbose )
+				LOGI( "Attached colour texture with id 0x%x as colour to shadowFramebuffer with id 0x%x", colr_texture, shadowFramebuffer );
 		}
 	}
  
@@ -204,7 +207,8 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr, int shadoww, int
 	}
 	else
 	{
-		LOGI( "Got a complete shadowFramebuffer object with id %x of size %dx%d", shadowFramebuffer, shadoww, shadowh );
+		if ( shdw_verbose )
+			LOGI( "Got a complete shadowFramebuffer object with id %x of size %dx%d", shadowFramebuffer, shadoww, shadowh );
 		return true;
 	}
 }
@@ -235,7 +239,8 @@ void shdw_destroyFramebuffer( int nr )
 	glDeleteFramebuffers( 1, &shadowFramebuffer );
 	CHECK_OGL
 
-	LOGI( "Destroyed shadow framebufer with id %x", shadowFramebuffer );
+	if ( shdw_verbose )
+		LOGI( "Destroyed shadow framebufer with id %x", shadowFramebuffer );
 	shadowFramebuffer=0;
 }
 
@@ -310,7 +315,8 @@ void shdw_dump( int nr )
 		}
 		delete [] vals;
 		fclose(f);
-		LOGI("Wrote depth map with id 0x%x to %s", t0, fname);
+		if ( shdw_verbose )
+			LOGI("Wrote depth map with id 0x%x to %s", t0, fname);
 	}
 }
 
