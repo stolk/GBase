@@ -10,7 +10,7 @@
 
 
 #define MAXUNIFORMS	512
-#define MAXGLPROGS	16
+#define MAXGLPROGS	18
 
 static int		glpr_unif[ MAXUNIFORMS ];	//!< uniform values.
 static const char*	glpr_name[ MAXUNIFORMS ];	//!< uniform names.
@@ -317,6 +317,7 @@ unsigned int glpr_load( const char* name, const char* src_vsh, const char* src_f
 		return 0;
 	}
 
+	ASSERT( glpr_numprograms < MAXGLPROGS );
 	glpr_programs[ glpr_numprograms++ ] = program;
 	glpr_searchindex = glpr_numu;
 	const char* s = uniforms;
