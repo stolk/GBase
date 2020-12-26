@@ -304,6 +304,14 @@ unsigned int glpr_load( const char* name, const char* src_vsh, const char* src_f
 	// specific to Ring Miner
 	numbound += bind_attribute( program, attributes, "boardpos", ATTRIB_BOARDPOS );
 	numbound += bind_attribute( program, attributes, "ore", ATTRIB_ORE );
+	// specific to photon mapper
+	numbound += bind_attribute( program, attributes, "tof", ATTRIB_TOF );
+	numbound += bind_attribute( program, attributes, "fsz", ATTRIB_FSZ );
+	numbound += bind_attribute( program, attributes, "row", ATTRIB_ROW );
+	numbound += bind_attribute( program, attributes, "col", ATTRIB_COL );
+	// specific to line viewer.
+	numbound += bind_attribute( program, attributes, "pt0", ATTRIB_PT0 );
+	numbound += bind_attribute( program, attributes, "pt1", ATTRIB_PT1 );
 
 	//LOGI( "bound %d attributes for shader %s", numbound, name );
 	(void)numbound;

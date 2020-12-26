@@ -89,4 +89,14 @@ const int ATTRIB_BOARDPOS = 1;
 // For terrain shader (Ring Miner)
 const int ATTRIB_ORE = 2;
 
+// For photons shader
+const int ATTRIB_TOF = 1;
+const int ATTRIB_FSZ = 2;
+const int ATTRIB_ROW = 3;
+const int ATTRIB_COL = 4;
+
+// For line viewer
+const int ATTRIB_PT0 = 3;
+const int ATTRIB_PT1 = 4;
+
 #endif
