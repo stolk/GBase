@@ -63,8 +63,12 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr, int shadoww, int
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 	if ( shdw_use_hardware_depth_compare )
 	{
+#if defined(ANDROID)
+        ASSERT( !shdw_use_hardware_depth_compare );
+#else
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_GREATER );
+#endif
 	}
 	const GLint filter = shdw_use_hardware_pcf ? GL_LINEAR : GL_NEAREST;
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter );
