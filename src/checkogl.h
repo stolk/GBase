@@ -52,16 +52,16 @@
 #endif
 
 #if defined(XWIN)
-#	if defined( USEES2 )
+#	if defined( USEGL3W )
+#		include <GL/gl3w.h>
+#	elif defined( USEES2 )
 #		define GLFW_INCLUDE_ES2
 #		include <GLFW/glfw3.h>
 #		include <GLES2/gl2ext.h>
-#	endif
-#	if defined( USEES3 )
+#	elif defined( USEES3 )
 #		define GLFW_INCLUDE_ES3
 #		include <GLFW/glfw3.h>
-#	endif
-#	if defined( USECOREPROFILE )
+#	elif defined( USECOREPROFILE )
 #		include <GL/glcorearb.h>
 #	endif
 #endif
