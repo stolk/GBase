@@ -72,6 +72,13 @@ void dbd_box( const mat44_t& m )
 }
 
 
+void dbd_box( const vec3_t& lo, const vec3_t& hi )
+{
+	const vec3_t d = hi-lo;
+	dbd_box( lo, vec3_t(d.x,0,0), vec3_t(0,d.y,0), vec3_t(0,0,d.z) );
+}
+
+
 void dbd_circlez( const mat44_t& m )
 {
 	const int nump = 12;
