@@ -8,7 +8,6 @@
 	if (OUT) \
 	{ \
 		const size_t written = fwrite(&(V), sizeof(V), 1, F); \
-		ASSERT(written != static_cast<size_t>(-1)); \
 		ASSERT(written == 1); \
 	} \
 	else \
@@ -25,7 +24,6 @@
 	if (OUT) \
 	{ \
 		const size_t written = fwrite(V, sizeof(V[0]), CNT, F); \
-		ASSERT(written != static_cast<size_t>(-1)); \
 		ASSERT(written == (size_t)CNT); \
 	} \
 	else \
