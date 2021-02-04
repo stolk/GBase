@@ -18,6 +18,8 @@ extern void dbd_box( const mat44_t& m );
 
 extern void dbd_box( const vec3_t& lo, const vec3_t& hi );
 
+extern void dbd_circlex( const mat44_t& m );
+
 extern void dbd_circlez( const mat44_t& m );
 
 extern void dbd_sphere( const vec3_t pos, float r );
