@@ -79,6 +79,34 @@ void dbd_box( const vec3_t& lo, const vec3_t& hi )
 }
 
 
+void dbd_corners( const vec3_t& lo, const vec3_t& hi )
+{
+	const vec3_t d = (hi-lo);
+	const vec3_t dx( d.x, 0, 0 );
+	const vec3_t dy( 0, d.y, 0 );
+	const vec3_t dz( 0, 0, d.z );
+	const vec3_t p000 = lo;
+	const vec3_t p100 = lo + dx;
+	const vec3_t p110 = lo + dx + dy;
+	const vec3_t p010 = lo      + dy;
+	const vec3_t p001 = lo           + dz;
+	const vec3_t p101 = lo + dx      + dz;
+	const vec3_t p111 = lo + dx + dy + dz;
+	const vec3_t p011 = lo + dy      + dz;
+	const float s = 0.25f;
+
+	dbd_line( p000, p000+dx*s ); dbd_line( p000, p000+dy*s ); dbd_line( p000, p000+dz*s );
+	dbd_line( p100, p100-dx*s ); dbd_line( p100, p100+dy*s ); dbd_line( p100, p100+dz*s );
+	dbd_line( p010, p010+dx*s ); dbd_line( p010, p010-dy*s ); dbd_line( p010, p010+dz*s );
+	dbd_line( p110, p110-dx*s ); dbd_line( p110, p110-dy*s ); dbd_line( p110, p110+dz*s );
+
+	dbd_line( p001, p001+dx*s ); dbd_line( p001, p001+dy*s ); dbd_line( p001, p001-dz*s );
+	dbd_line( p101, p101-dx*s ); dbd_line( p101, p101+dy*s ); dbd_line( p101, p101-dz*s );
+	dbd_line( p011, p011+dx*s ); dbd_line( p011, p011-dy*s ); dbd_line( p011, p011-dz*s );
+	dbd_line( p111, p111-dx*s ); dbd_line( p111, p111-dy*s ); dbd_line( p111, p111-dz*s );
+}
+
+
 void dbd_circlex( const mat44_t& m )
 {
 	const int nump = 12;
