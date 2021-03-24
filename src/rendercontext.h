@@ -90,10 +90,10 @@ const int ATTRIB_BOARDPOS = 1;
 const int ATTRIB_ORE = 2;
 
 // For photons shader
-const int ATTRIB_TOF = 1;
-const int ATTRIB_FSZ = 2;
-const int ATTRIB_ROW = 3;
-const int ATTRIB_COL = 4;
+const int ATTRIB_TOF = 3;
+const int ATTRIB_FSZ = 4;
+const int ATTRIB_ROW = 5;
+const int ATTRIB_COL = 6;
 
 // For line viewer
 const int ATTRIB_PT0 = 3;
