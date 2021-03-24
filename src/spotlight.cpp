@@ -33,7 +33,7 @@ void spotlight_setProjection( float fov, float zNear, float zFar )
 	sl_proj.identity();
 
 #if 1
-	// create an orthogonal projection matrix
+	// create a perspective projection matrix
 	const float f = 1.0f / tanf(fov/2.0f);
 	const float aspect = 1.0f;
 	float* mout = sl_proj.data;
@@ -58,7 +58,7 @@ void spotlight_setProjection( float fov, float zNear, float zFar )
 	mout[14] = 2 * zFar * zNear /  (zNear-zFar);
 	mout[15] = 0.0f;
 #else
-	// create a perspective projection matrix
+	// create an orthogonal projection matrix
         const float projectionSize = 50.0f;
 
         const float left  = -projectionSize;
