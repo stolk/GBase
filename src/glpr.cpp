@@ -355,3 +355,46 @@ unsigned int glpr_load( const char* name, const char* src_vsh, const char* src_f
 	return program;
 }
 
+
+unsigned int glpr_load_from_files( const char* name, const char* fname_vsh, const char* fname_fsh, const char* attributes, const char* uniforms )
+{
+	FILE* f_vsh = fopen( fname_vsh, "rb" );
+	if ( !f_vsh )
+	{
+		LOGE( "Failed to load vsh in file %s", fname_vsh );
+		return 0;
+	}
+	FILE* f_fsh = fopen( fname_fsh, "rb" );
+	if ( !f_fsh )
+	{
+		LOGE( "Failed to load fsh in file %s", fname_fsh );
+		return 0;
+	}
+	// Find out how large the files are, using fseek()
+	fseek( f_vsh, 0, SEEK_END );
+	fseek( f_fsh, 0, SEEK_END );
+	const size_t sz_vsh = ftell( f_vsh );
+	const size_t sz_fsh = ftell( f_fsh );
+	fseek( f_vsh, 0, SEEK_SET );
+	fseek( f_fsh, 0, SEEK_SET );
+	ASSERT( sz_vsh );
+	ASSERT( sz_fsh );
+	// Create buffers for the source text, plus one character to terminate string.
+	char* vsh = (char*)malloc( sz_vsh+1 );
+	char* fsh = (char*)malloc( sz_fsh+1 );
+	int n0 = fread( vsh, sz_vsh, 1, f_vsh );
+	int n1 = fread( fsh, sz_fsh, 1, f_fsh );
+	ASSERT( n0==1 );
+	ASSERT( n1==1 );
+	fclose( f_vsh );
+	fclose( f_fsh );
+	vsh[sz_vsh] = 0;
+	fsh[sz_fsh] = 0;
+	// With both the shaders source texts, we can create the program.
+	const unsigned int rv = glpr_load( name, vsh, fsh, attributes, uniforms );
+	// Clean up.
+	free( vsh );
+	free( fsh );
+	return rv;
+}
+

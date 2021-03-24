@@ -18,6 +18,8 @@ extern void glpr_clear( void );
 
 extern unsigned int glpr_load( const char* name, const char* src_vsh, const char* src_fsh, const char* attributes, const char* uniforms );
 
+extern unsigned int glpr_load_from_files( const char* name, const char* fname_vsh, const char* fname_fsh, const char* attributes, const char* uniforms );
+
 extern bool glpr_validate( unsigned int prog );
 
 extern int  glpr_uniform( const char* nm );
