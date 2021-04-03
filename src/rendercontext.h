@@ -9,12 +9,13 @@
 #define RENDERCONTEXT_H
 
 
-typedef struct
+typedef struct rendercontext
 {
 	// Camera
 	mat44_t camtrf;
 	mat44_t	camview;
 	mat44_t camproj;
+	mat44_t camviewproj;
 
 	// First light
 	mat44_t lighttrf;
