@@ -23,6 +23,8 @@ extern vec3_t spotlight_pos(void);
 
 extern vec3_t spotlight_dir(void);
 
+extern float spotlight_fov(void);
+
 extern void spotlight_setCOI(const vec3_t& c);
 
 extern void spotlight_update(float dt);

@@ -15,9 +15,12 @@ static mat44_t sl_proj;		// projection transformation (ortho cam)
 static vec3_t sl_pos;
 static vec3_t sl_coi;
 
+static float sl_fov;
+
 
 void spotlight_init(void)
 {
+	sl_fov = 0;
 	sl_trf.identity();
 	sl_view.identity();
 	sl_proj.identity();
@@ -30,6 +33,7 @@ void spotlight_init(void)
 
 void spotlight_setProjection( float fov, float zNear, float zFar )
 {
+	sl_fov = fov;
 	sl_proj.identity();
 
 #if 1
@@ -133,6 +137,12 @@ vec3_t spotlight_dir(void)
 	vec3_t d = sl_coi - sl_pos;
 	d.normalize();
 	return d;
+}
+
+
+float spotlight_fov(void)
+{
+	return sl_fov;
 }
 
 
