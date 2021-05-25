@@ -239,6 +239,29 @@ void dbd_vector( const vec3_t& fr, const vec3_t& to )
 }
 
 
+void dbd_arrowz( const mat44_t& trf, float s )
+{
+	vec3_t o = trf.getTranslation();
+	vec3_t x = trf.getRow(0) * s;
+	vec3_t y = trf.getRow(1) * s;
+	vec3_t p[7] = 
+	{
+		o + x * 3,
+		o + y * -2,
+		o + y * -1,
+		o + x * -4 + y * -1,
+		o + x * -4 + y *  1,
+		o + y *  1,
+		o + y *  2,
+	};
+	for ( int i=0; i<7; ++i )
+	{
+		int j = (i+1) % 7;
+		dbd_line( p[i], p[j] );
+	}
+}
+
+
 int dbd_draw_edge( const rendercontext_t& rc )
 {
 	static int mcvpUniform = glpr_uniform( "modelcamviewprojmat" );
