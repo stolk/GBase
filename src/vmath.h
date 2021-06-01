@@ -2036,6 +2036,14 @@ namespace VMATH_NAMESPACE
 	    return Vector3<T>( at(row,0), at(row,1), at(row,2) );
 	 }
 
+	 void setRow( int row, Vector3<T> v )
+	 {
+	    at(row,0) = v.x;
+	    at(row,1) = v.y;
+	    at(row,2) = v.z;
+ 	    at(row,3) = 0;
+	 }
+
 	 /**
 	  * Added by Bram: set all matrix rows
 	  *
