@@ -309,6 +309,11 @@ unsigned int glpr_load( const char* name, const char* src_vsh, const char* src_f
 	numbound += bind_attribute( program, attributes, "fsz", ATTRIB_FSZ );
 	numbound += bind_attribute( program, attributes, "row", ATTRIB_ROW );
 	numbound += bind_attribute( program, attributes, "col", ATTRIB_COL );
+	// specific to photon mapper, billboards
+	numbound += bind_attribute( program, attributes, "bdpos", ATTRIB_BPO );
+	numbound += bind_attribute( program, attributes, "scale", ATTRIB_SCL );
+	numbound += bind_attribute( program, attributes, "angle", ATTRIB_ANG );
+
 	// specific to line viewer.
 	numbound += bind_attribute( program, attributes, "pt0", ATTRIB_PT0 );
 	numbound += bind_attribute( program, attributes, "pt1", ATTRIB_PT1 );
