@@ -2041,7 +2041,7 @@ namespace VMATH_NAMESPACE
 	    at(row,0) = v.x;
 	    at(row,1) = v.y;
 	    at(row,2) = v.z;
- 	    at(row,3) = 0;
+ 	    at(row,3) = row==3?1:0;
 	 }
 
 	 /**
