@@ -202,6 +202,23 @@ void camera_setPanPid( float p, float i, float d )
 }
 
 
+void camera_set_vertical_fov( float a )
+{
+	fovy_radians = a;
+}
+
+
+float camera_set_diagonal_fov( float a, float w, float h )
+{
+	const float d = sqrtf(w*w + h*h);
+	const float m = d / ( 2 * tanf( a / 2 ) );
+
+	const float b = 2 * atanf( h / (2*m) );
+	camera_set_vertical_fov( b );
+	return b;
+}
+
+
 void camera_setAspectRatio(float aspect, float zNear, float zFar, bool offaxis)
 {
 	// create a projection matrix

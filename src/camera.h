@@ -16,6 +16,10 @@ extern float camera_maxDist;
 
 extern void camera_init( float fovy = 0.30f * M_PI );
 
+extern float camera_set_diagonal_fov( float a, float imw, float imh );
+
+extern void camera_set_vertical_fov( float a );
+
 extern void camera_setAspectRatio(float aspect, float zNear=0.1, float zFar=150, bool offaxis=false);
 
 extern vec3_t camera_screenToWorld(vec3_t spos);
