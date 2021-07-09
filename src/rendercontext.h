@@ -87,6 +87,11 @@ const int ATTRIB_UVSHIFT = 4;
 // For billboard shader (Ring Miner)
 const int ATTRIB_BOARDPOS = 1;
 
+// For billboard shader (GIB)
+const int ATTRIB_BPO = 1;
+const int ATTRIB_SCL = 3;
+const int ATTRIB_ANG = 4;
+
 // For terrain shader (Ring Miner)
 const int ATTRIB_ORE = 2;
 
