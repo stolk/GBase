@@ -125,6 +125,24 @@ void dbd_circlex( const mat44_t& m )
 }
 
 
+void dbd_circley( const mat44_t& m )
+{
+	const int nump = 12;
+	vec4_t pts[ nump ];
+	for ( int i=0; i<nump; ++i )
+	{
+		const float a = M_PI * 2.0f * i / (nump-1.0f);
+		pts[ i ] = vec4_t( cosf(a), 0.0f, sinf(a), 1.0f );
+	}
+	for ( int i=0; i<nump-1; ++i )
+	{
+		const vec4_t xp0 = m * pts[ i+0 ];
+		const vec4_t xp1 = m * pts[ i+1 ];
+		dbd_line( vec3_t(xp0[0],xp0[1],xp0[2]), vec3_t(xp1[0],xp1[1],xp1[2]) );
+	}
+}
+
+
 void dbd_circlez( const mat44_t& m )
 {
 	const int nump = 12;
