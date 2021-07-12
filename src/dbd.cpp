@@ -161,6 +161,27 @@ void dbd_circlez( const mat44_t& m )
 }
 
 
+void dbd_trf( const mat44_t& m, float s )
+{
+	const vec3_t p = m.getTranslation();
+	const vec3_t sx = m.getRow(0) * s;
+	const vec3_t sy = m.getRow(1) * s;
+	const vec3_t sz = m.getRow(2) * s;
+	const int nump = 12;
+	vec3_t pts[ nump ];
+	for ( int i=0; i<nump; ++i )
+	{
+		const float a = M_PI * 2.0f * i / (nump-1.0f);
+		pts[ i ] = p + sx * cosf(a) + sy * sinf(a);
+	}
+	for ( int i=0; i<nump-1; ++i )
+		dbd_line( pts[i+0], pts[i+1] );
+	dbd_line( p, p+sx );
+	dbd_line( p, p+sy );
+	dbd_vector( p, p+sz );
+}
+
+
 void dbd_octaeder( const vec3_t& p, float sz )
 {
 	const vec3_t x0 = p - vec3_t(sz,0,0);

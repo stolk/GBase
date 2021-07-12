@@ -38,5 +38,7 @@ extern void dbd_octaeder( const vec3_t& p, float sz );
 
 extern void dbd_arrowz( const mat44_t& trf, float s );
 
+extern void dbd_trf( const mat44_t& trf, float s );
+
 #endif
 
