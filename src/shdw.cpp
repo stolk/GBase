@@ -27,6 +27,10 @@ bool shdw_use_hardware_depth_compare = false;
 bool shdw_use_hardware_pcf = false;
 bool shdw_verbose = true;
 
+int shdw_create_count = 0;
+int shdw_destroy_count = 0;
+int shdw_valid_count = 0;
+
 //unsigned int shdw_texture=0;
 
 
@@ -161,6 +165,8 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr, int shadoww, int
 				LOGI( "Attached colour texture with id 0x%x as colour to shadowFramebuffer with id 0x%x", colr_texture, shadowFramebuffer );
 		}
 	}
+
+	shdw_create_count += 1;
  
 	// check for success
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER) ;
@@ -213,6 +219,7 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr, int shadoww, int
 	{
 		if ( shdw_verbose )
 			LOGI( "Got a complete shadowFramebuffer object with id %x of size %dx%d", shadowFramebuffer, shadoww, shadowh );
+		shdw_valid_count += 1;
 		return true;
 	}
 }
@@ -246,6 +253,8 @@ void shdw_destroyFramebuffer( int nr )
 	if ( shdw_verbose )
 		LOGI( "Destroyed shadow framebufer with id %x", shadowFramebuffer );
 	shadowFramebuffer=0;
+
+	shdw_destroy_count += 1;
 }
 
 
@@ -253,13 +262,25 @@ void shdw_use( int nr )
 {
 	GLuint& shadowFramebuffer = shadowFramebuffers[nr];
 
-	ASSERTM(shadowFramebuffer>0, "No valid framebuffer(%d) for shdw slot %d", shadowFramebuffer, nr);
+	ASSERTM
+	(
+		shadowFramebuffer>0,
+		"No valid framebuffer(%d) for shdw slot %d. create_count %d destroy_count %d valid_count %d",
+		shadowFramebuffer, nr, shdw_create_count, shdw_destroy_count, shdw_valid_count
+	);
 
 	glBindFramebuffer( GL_FRAMEBUFFER, shadowFramebuffer );
 	CHECK_OGL
 
 	glViewport(0,0,shdw_w[nr],shdw_h[nr]);
 	CHECK_OGL
+}
+
+
+int shdw_usable( int nr )
+{
+	GLuint& shadowFramebuffer = shadowFramebuffers[nr];
+	return shadowFramebuffer>0 ? 1 : 0;
 }
 
 

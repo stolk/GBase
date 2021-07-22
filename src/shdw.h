@@ -15,6 +15,8 @@ extern void shdw_destroyFramebuffer( int nr=0 );
 
 extern void shdw_use( int nr=0 );
 
+extern int  shdw_usable( int nr=0 );
+
 extern void shdw_invalidate( int nr=0 );
 
 extern void shdw_dump( int nr=0 );
