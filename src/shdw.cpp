@@ -290,7 +290,7 @@ unsigned int shdw_texture(int nr)
 }
 
 
-void shdw_invalidate( void )
+void shdw_invalidate( int nr )
 {
 #if defined(USEES3)
 	GLuint& shadowFramebuffer = shadowFramebuffers[nr];
