@@ -209,6 +209,7 @@ static void androidsupport_presentAssert( const char* condition, const char* fil
 //! Hooks an assert handler.
 void androidsupport_init( struct android_app* app )
 {
+	LOGI("NDK Version: %d.%d", __NDK_MAJOR__, __NDK_MINOR__);
 	memset( &androidsupport_engine, 0, sizeof( androidsupport_engine) );
 	androidsupport_engine.app = app;
 	asserthook = androidsupport_presentAssert;	// If an assert is triggered, call this function.
@@ -253,7 +254,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 		EGL_BLUE_SIZE, 8,
 		EGL_GREEN_SIZE, 8,
 		EGL_RED_SIZE, 8,
-#if 0
+#if 1
 	// MSAA is super slow on some Android devices, so only use it with utmost care.
 		EGL_SAMPLE_BUFFERS, 1,
 		EGL_SAMPLES, 4,
