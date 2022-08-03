@@ -55,6 +55,17 @@ static __inline__ void hsv_to_rgb
 }
 
 
+static __inline__ uint32_t hsv_to_rgb24(float h, float s, float v)
+{
+	float red,grn,blu;
+	hsv_to_rgb(h,s,v, &red,&grn,&blu);
+	const uint8_t r = (uint8_t)( red * 255.99f);
+	const uint8_t g = (uint8_t)( grn * 255.99f);
+	const uint8_t b = (uint8_t)( blu * 255.99f);
+	return (r<<16) | (g<<8) | (b<<0);
+}
+
+
 static __inline__ float hue_to_rgb
 (
 	float p,
