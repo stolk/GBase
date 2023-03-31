@@ -67,7 +67,7 @@ bool shdw_createFramebuffer( bool supportsDepthTexture, int nr, int shadoww, int
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 	if ( shdw_use_hardware_depth_compare )
 	{
-#if defined(ANDROID)
+#if defined(ANDROID) || defined(IPHN)
         ASSERT( !shdw_use_hardware_depth_compare );
 #else
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
