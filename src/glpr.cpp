@@ -387,8 +387,8 @@ unsigned int glpr_load_from_files( const char* name, const char* fname_vsh, cons
 	// Create buffers for the source text, plus one character to terminate string.
 	char* vsh = (char*)malloc( sz_vsh+1 );
 	char* fsh = (char*)malloc( sz_fsh+1 );
-	int n0 = fread( vsh, sz_vsh, 1, f_vsh );
-	int n1 = fread( fsh, sz_fsh, 1, f_fsh );
+	const size_t n0 = fread( vsh, sz_vsh, 1, f_vsh );
+	const size_t n1 = fread( fsh, sz_fsh, 1, f_fsh );
 	ASSERT( n0==1 );
 	ASSERT( n1==1 );
 	fclose( f_vsh );
