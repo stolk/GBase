@@ -95,11 +95,13 @@ const int ATTRIB_ANG = 4;
 // For terrain shader (Ring Miner)
 const int ATTRIB_ORE = 2;
 
-// For photons shader
+// For photons shader (GIB)
 const int ATTRIB_TOF = 3;
 const int ATTRIB_FSZ = 4;
 const int ATTRIB_ROW = 5;
 const int ATTRIB_COL = 6;
+const int ATTRIB_FAC = 7;
+const int ATTRIB_DUV = 8;
 
 // For line viewer
 const int ATTRIB_PT0 = 3;
