@@ -579,7 +579,7 @@ float* geomdb_fetch( geomdesc_t* geomdesc )
 		if ( l0 == l1 && !strncmp( n, geomdesc->tag, strlen( geomdesc->tag ) ) )
 		{
 			struct stat filestats;
-			char fname[256];
+			char fname[260];
 			snprintf( fname, sizeof(fname), "%s/%s", geomdb_path, n );
 			const int rv = stat( fname, &filestats );
 			if ( rv )
