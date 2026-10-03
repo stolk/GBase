@@ -28,6 +28,11 @@ int wavdb_load( const char* pkgname, const char* lname, const char** names, int*
 	int numLoaded = 0;
 	for ( int i=0; i<count; ++i )
 	{
+		if ( wavdb_sz == WAVDB_MAX_SZ )
+		{
+			LOGE( "wavdb exceeded max capacity of %d entries.", WAVDB_MAX_SZ );
+			break;
+		}
 		const char* name = names[ i ];
 		char fname[128];
 		snprintf(fname, sizeof(fname), "%s/%s/%s.wav", wavdb_path, lname, name);
@@ -36,14 +41,14 @@ int wavdb_load( const char* pkgname, const char* lname, const char** names, int*
 		if (f)
 		{
 			const size_t hdrsize = 44;	// Assume 44 byte header - DANGEROUS!
-			const off_t endpos = fseek(f, 0, SEEK_END);
-			if (endpos < 0)
+			const long filelength = fseek(f, 0, SEEK_END) == 0 ? ftell(f) : -1;
+			if (filelength < (long)hdrsize)
 			{
-				perror("fseek");
+				LOGE( "Cannot use %s: length %ld is shorter than a wav header.", fname, filelength );
+				fclose(f);
 			}
 			else
 			{
-				const size_t filelength = ftell(f);
 				wavdb_names[ wavdb_sz ] = name;
 				wavdb_lengths[ wavdb_sz ] = (int) ((filelength - hdrsize)/2);
 				fseek(f, hdrsize, SEEK_SET);

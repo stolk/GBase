@@ -134,6 +134,7 @@ int txdb_load( const char* pkgname, const char* lname, const char** names, unsig
 			size_t nmlen = p ? p - n : -1;
 			if ( nmlen > 0 && !strncmp( names[ i ], n, nmlen ) )
 			{
+				ASSERTM( p, "Texture file '%s' has no '.WxH' size in its name.", n );
 				int w = atoi( p+1 );
 				p = strchr( p, 'x' );
 				if ( !p )
@@ -193,14 +194,12 @@ void txdb_use(const char* name)
 void txdb_prt(void)
 {
 	char s[2048];
-	size_t space = sizeof(s);
 	snprintf( s, 2048, "txdb contains %d textures: ", txdb_sz );
 	for ( int i=0; i<txdb_sz; ++i )
 	{
 		char t[ 80 ];
-		int sz = snprintf( t, 80, "%s(%d)%c", txdb_names[ i ], txdb_values[ i ], i==txdb_sz-1?'.':',' );
-		strncat( s, t, space-1 );
-		space -= sz;
+		snprintf( t, 80, "%s(%d)%c", txdb_names[ i ], txdb_values[ i ], i==txdb_sz-1?'.':',' );
+		strncat( s, t, sizeof(s) - strlen(s) - 1 );
 	}
 	LOGI( "%s", s );
 }

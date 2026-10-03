@@ -187,11 +187,14 @@ void tty_draw_edge( const char* tag, const rendercontext_t& rc )
 					{
 						const float xx = fntdata[ fr*2 + 0 ];
 						const float yy = fntdata[ fr*2 + 1 ];
-						*writer++ = px + ( xx/6 ) * charw;
-						*writer++ = py + ( yy/6 ) * charh;
-						*writer++ = 0.0;
-						*writer++ = 1.0;
-						++numv;
+						if ( numv < 2048 )
+						{
+							*writer++ = px + ( xx/6 ) * charw;
+							*writer++ = py + ( yy/6 ) * charh;
+							*writer++ = 0.0;
+							*writer++ = 1.0;
+							++numv;
+						}
 						++fr;
 					}
 				}

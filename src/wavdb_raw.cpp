@@ -89,14 +89,12 @@ void wavdb_lookup(const char* name, int* length, short** data)
 void wavdb_prt(void)
 {
 	char s[1024];
-	size_t space = sizeof( s );
 	s[0] = 0;
 	for ( int i=0; i<wavdb_sz; ++i )
 	{
 		char t[80];
-		int sz = snprintf( t, 80, "%s(%d)%c", wavdb_names[ i ], wavdb_lengths[ i ], i==wavdb_sz-1?'.':',' );
-		strncat( s, t, space-1 );
-		space -= sz;
+		snprintf( t, 80, "%s(%d)%c", wavdb_names[ i ], wavdb_lengths[ i ], i==wavdb_sz-1?'.':',' );
+		strncat( s, t, sizeof(s) - strlen(s) - 1 );
 	}
 	LOGI( "wavdb contains %d waves: %s", wavdb_sz, s );
 }
