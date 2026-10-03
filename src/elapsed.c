@@ -77,7 +77,7 @@ double elapsed_ms_since_last_call( void )
 	prev = curr;
 	return delta;
 #else
-#	error "elapsed_ms_since_start() has not been implemented for this architecture."
+#	error "elapsed_ms_since_last_call() has not been implemented for this architecture."
 #endif
 }
 

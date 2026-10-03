@@ -4,11 +4,11 @@ static inline int num_120Hz_steps( double elapsed )
 	// Our simulation frequency is 120Hz, an 8⅓  (eight one third) ms period.
 	double e = 1 / 120.0;
 
-	// We will pretend our display sync rate is one of thse:
+	// We will pretend our display sync rate is one of these:
 	     if ( elapsed > 4.5 * e )
 		return 5;			// 24 Hz	( .. to 26.67 Hz )
 	else if ( elapsed > 3.5 * e )
-		return 4;			// 30 Hz	( 26.67 Hz to 34.39 Hz )
+		return 4;			// 30 Hz	( 26.67 Hz to 34.29 Hz )
 	else if ( elapsed > 2.5 * e )
 		return 3;			// 40 Hz	( 34.29 Hz to 48.00 Hz )
 	else if ( elapsed > 1.5 * e )
@@ -29,7 +29,7 @@ static inline int num_240Hz_steps( double elapsed )
 	else if ( elapsed > 10.5 * e )
 		return 11;			// 21.82 Hz	( 20.87 Hz to 22.86 Hz )
 	else if ( elapsed > 9.5 * e )
-		return 10;			// 24 Hz	( 22.86 Hz to 25.24 Hz )
+		return 10;			// 24 Hz	( 22.86 Hz to 25.26 Hz )
 	else if ( elapsed > 8.5 * e )
 		return 9;			// 26.67 Hz	( 25.26 Hz to 28.24 Hz )
 	else if ( elapsed > 7.5 * e )
@@ -43,7 +43,7 @@ static inline int num_240Hz_steps( double elapsed )
 	else if ( elapsed > 3.5 * e )
 		return 4;			// 60 Hz	( 53.33 Hz to 68.57 Hz )
 	else if ( elapsed > 2.5 * e )
-		return 3;			// 90 Hz	( 68.57 Hz to 96 Hz )
+		return 3;			// 80 Hz	( 68.57 Hz to 96 Hz )
 	else if ( elapsed > 1.5 * e )
 		return 2;			// 120 Hz	( 96 Hz to 160 Hz )
 	else
@@ -53,7 +53,7 @@ static inline int num_240Hz_steps( double elapsed )
 
 static inline int num_480Hz_steps( double elapsed )
 {
-	// Our simulation frequency is 480Hz, a 2𐧶 (two one twelfth) ms.
+	// Our simulation frequency is 480Hz, a 2𐧶 (two one twelfth) ms period.
 	double e = 1 / 480.0;
 
 	// We will pretend our display sync rate is one of these:
@@ -62,32 +62,32 @@ static inline int num_480Hz_steps( double elapsed )
 	else if ( elapsed > 14.5 * e )
 		return 15;			// 32 Hz	( 30.97 Hz to 33.10 Hz )
 	else if ( elapsed > 13.5 * e )
-		return 14;			// 36.92 Hz	( 33.10 Hz to 38.4 Hz )
+		return 14;			// 34.29 Hz	( 33.10 Hz to 35.56 Hz )
 	else if ( elapsed > 12.5 * e )
-		return 13;			// 40 Hz	( 38.4 Hz to 41.74 Hz )
+		return 13;			// 36.92 Hz	( 35.56 Hz to 38.40 Hz )
 	else if ( elapsed > 11.5 * e )
-		return 12;			// 43.64Hz	( 41.74 Hz to 45.71 Hz )
+		return 12;			// 40 Hz	( 38.40 Hz to 41.74 Hz )
 	else if ( elapsed > 10.5 * e )
-		return 11;			// 48 Hz	( 45.71 Hz to 50.53 Hz )
+		return 11;			// 43.64 Hz	( 41.74 Hz to 45.71 Hz )
 	else if ( elapsed >  9.5 * e )
-		return 10;			// 53.33 Hz	( 50.53 Hz to 56.47 Hz )
+		return 10;			// 48 Hz	( 45.71 Hz to 50.53 Hz )
 	else if ( elapsed >  8.5 * e )
-		return 9;			// 60 Hz	( 56.47 Hz to 64 Hz )
+		return 9;			// 53.33 Hz	( 50.53 Hz to 56.47 Hz )
 	else if ( elapsed >  7.5 * e )
-		return 8;			// 68.57 Hz	( 64 Hz to 73.85 Hz )
+		return 8;			// 60 Hz	( 56.47 Hz to 64 Hz )
 	else if ( elapsed >  6.5 * e )
-		return 7;			// 80 Hz	( 73.85 Hz to 87.27 Hz )
+		return 7;			// 68.57 Hz	( 64 Hz to 73.85 Hz )
 	else if ( elapsed >  5.5 * e )
-		return 6;			// 96 Hz	( 87.27 Hz to 106.67 Hz )
+		return 6;			// 80 Hz	( 73.85 Hz to 87.27 Hz )
 	else if ( elapsed >  4.5 * e )
-		return 5;			// 120 Hz	( 106.67 Hz to 137.14 Hz )
+		return 5;			// 96 Hz	( 87.27 Hz to 106.67 Hz )
 	else if ( elapsed >  3.5 * e )
-		return 4;			// 160 Hz	( 137.14 Hz to 192 Hz )
+		return 4;			// 120 Hz	( 106.67 Hz to 137.14 Hz )
 	else if ( elapsed >  2.5 * e )
-		return 2;			// 240 Hz	( 192 Hz to 320 Hz )
+		return 3;			// 160 Hz	( 137.14 Hz to 192 Hz )
 	else if ( elapsed >  1.5 * e )
-		return 2;			// 480 Hz	( 320 Hz to .. )
+		return 2;			// 240 Hz	( 192 Hz to 320 Hz )
 	else
-		return 1;
+		return 1;			// 480 Hz	( 320 Hz to .. )
 }
 

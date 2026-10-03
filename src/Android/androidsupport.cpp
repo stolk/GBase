@@ -297,7 +297,7 @@ int androidsupport_initDisplay( bool withDepthBuffer )
 		LOGE( "Cannot get EGL configuration. Trying fallback (16bit colour)..." );
 		eglChooseConfig( display, attribs_fallback, &config, 1, &numConfigs);
 		CHECKEGLV( eglChooseConfig )
-		if ( numConfigs < 0 )
+		if ( numConfigs < 1 )
 			return LAUNCH_FAILURE_NO_MATCHING_EGL_CONFIG;
 	}
 

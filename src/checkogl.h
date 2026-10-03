@@ -82,7 +82,7 @@
 #	if defined( IPHN ) && defined( USEES3 )
 #		define PUSHGROUPMARKER(A) glPushGroupMarkerEXT( 0, #A );
 #		define POPGROUPMARKER     glPopGroupMarkerEXT();
-#	elif defined( XWIN ) && defined( DEBUG )
+#	elif defined( XXWIN ) && defined( DEBUG )
 //#		define PUSHGROUPMARKER(A) glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, #A );
 //#		define POPGROUPMARKER     glPopDebugGroup();
 #		define PUSHGROUPMARKER(A) glPushGroupMarkerEXT( 0, #A );

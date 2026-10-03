@@ -38,17 +38,22 @@ int wavdb_load( const char* pkgname, const char* lname, const char** names, int*
 			const size_t hdrsize = 44;	// Assume 44 byte header - DANGEROUS!
 			const off_t endpos = fseek(f, 0, SEEK_END);
 			if (endpos < 0)
+			{
 				perror("fseek");
-			const size_t filelength = ftell(f);
-			wavdb_names[ wavdb_sz ] = name;
-			wavdb_lengths[ wavdb_sz ] = (int) ((filelength - hdrsize)/2);
-			fseek(f, hdrsize, SEEK_SET);
-			wavdb_waves[wavdb_sz] = (short*)malloc(wavdb_lengths[wavdb_sz] * sizeof(short));
-			const size_t res = fread(wavdb_waves[wavdb_sz], sizeof(short), wavdb_lengths[wavdb_sz], f);
-			ASSERT((int)res == wavdb_lengths[wavdb_sz]);
-			fclose(f);
-			wavdb_sz++;
-			numLoaded++;
+			}
+			else
+			{
+				const size_t filelength = ftell(f);
+				wavdb_names[ wavdb_sz ] = name;
+				wavdb_lengths[ wavdb_sz ] = (int) ((filelength - hdrsize)/2);
+				fseek(f, hdrsize, SEEK_SET);
+				wavdb_waves[wavdb_sz] = (short*)malloc(wavdb_lengths[wavdb_sz] * sizeof(short));
+				const size_t res = fread(wavdb_waves[wavdb_sz], sizeof(short), wavdb_lengths[wavdb_sz], f);
+				ASSERT((int)res == wavdb_lengths[wavdb_sz]);
+				fclose(f);
+				wavdb_sz++;
+				numLoaded++;
+			}
 		}
 		else
 		{

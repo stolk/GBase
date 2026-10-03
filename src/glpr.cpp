@@ -203,7 +203,8 @@ bool glpr_validate( GLuint prog )
 	glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
 	if ( logLength > 1 )
 	{
-		GLchar *log = (GLchar *)malloc( (unsigned int) logLength );
+		GLchar *log = (GLchar *)malloc( (unsigned int) (logLength+1) );
+		log[ logLength ] = 0;
 		glGetProgramInfoLog(prog, logLength, &logLength, log);
 		if ( !strstr( log, "Validation successful." ) )	// This is what AMD GPUPRO reports. It is not interesting.
 			LOGE( "Program(%d) validate log:\n%s", prog, log );
