@@ -150,7 +150,8 @@ static bool glpr_compile( GLuint* shader, GLenum type, const GLchar* source )
 	CHECK_OGL_RELEASE
 	if ( logLength > 1 )
 	{
-		GLchar *log = (GLchar *)malloc( (unsigned int)logLength );
+		GLchar *log = (GLchar *)malloc( (unsigned int)(logLength+1) );
+		log[ logLength ] = 0;
 		glGetShaderInfoLog( *shader, logLength, &logLength, log );
 		CHECK_OGL_RELEASE
 		LOGI( "Shader compile log:\n%s", log );
@@ -178,7 +179,8 @@ static bool glpr_link( GLuint prog )
 	CHECK_OGL_RELEASE
 	if ( logLength > 1 )
 	{
-		GLchar *log = (GLchar*)malloc( (unsigned int)logLength );
+		GLchar *log = (GLchar*)malloc( (unsigned int)(logLength+1) );
+		log[ logLength ] = 0;
 		glGetProgramInfoLog( prog, logLength, &logLength, log );
 		CHECK_OGL_RELEASE
 		LOGE( "Program link log:\n%s", log );
