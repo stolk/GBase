@@ -2436,7 +2436,7 @@ namespace VMATH_NAMESPACE
 	       - at(1,0) * at(0,1) * at(2,2) 
 	       + at(0,0) * at(1,1) * at(2,2);
   
-	    return ret * det();
+	    return ret / det();
 	 }
 
 
