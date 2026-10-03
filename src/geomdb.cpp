@@ -515,7 +515,10 @@ void geomdb_bind( geomdesc_t* geomdesc, bool forEdge, bool istextured )
 			glVertexAttribPointer( ATTRIB_RGB, 3, GL_FLOAT, 0, stride, (void*) (  6 * sizeof(float) ) );
 		glEnableVertexAttribArray( ATTRIB_VERTEX );
 		glEnableVertexAttribArray( ATTRIB_NORMAL );
-		glEnableVertexAttribArray( ATTRIB_RGB );
+		if ( istextured )
+			glEnableVertexAttribArray( ATTRIB_UV );
+		else
+			glEnableVertexAttribArray( ATTRIB_RGB );
 		CHECK_OGL
 	}
 	else

@@ -182,12 +182,9 @@ int offsc_createMultiSampleFramebuffer( int w, int h, bool withdepth )
 	if ( withdepth )
 	{
 		// create the texture
+		// Multisample textures have no sampler state, so no filter/wrap parameters.
 		glGenTextures( 1, offsc_depth_texture+idx );
 		glBindTexture( GL_TEXTURE_2D_MULTISAMPLE, offsc_depth_texture[idx] );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 		CHECK_OGL
 
 #if defined( USEES2 )
@@ -220,11 +217,6 @@ int offsc_createMultiSampleFramebuffer( int w, int h, bool withdepth )
 
 	glGenTextures( 1, offsc_color_texture+idx );
 	glBindTexture( GL_TEXTURE_2D_MULTISAMPLE, offsc_color_texture[idx] );
-	CHECK_OGL
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 	CHECK_OGL
 	glTexImage2DMultisample
 	(
