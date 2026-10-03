@@ -305,8 +305,8 @@ void tty_draw_string( const char* str, const rendercontext_t& rc, vec3_t pos, ve
 					*writer++ = py + ( yy/6 ) * charh;
 					*writer++ = 0.0;
 					*writer++ = 1.0;
+					++numv;
 				}
-				++numv;
 				++fr;
 			}
 		}

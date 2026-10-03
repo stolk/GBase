@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <err.h>
 #include <execinfo.h>
@@ -91,9 +92,11 @@ void posix_print_stack_trace( void )
 		const size_t len = strlen( line );
 		if ( len >= 8 )
 		{
-			strncat( frametext, line, sizeof(frametext) - filled );
+			if ( filled + 1 < sizeof(frametext) )
+				strncat( frametext, line, sizeof(frametext) - filled - 1 );
 			filled += len;
-			strncat( frametext, "\n", sizeof(frametext) - filled );
+			if ( filled + 1 < sizeof(frametext) )
+				strncat( frametext, "\n", sizeof(frametext) - filled - 1 );
 			filled += 1;
 		}
 	}
@@ -189,12 +192,17 @@ static void posix_signal_handler( int sig, siginfo_t *siginfo, void *context )
 	}
 	LOGE( "Signal Handler: %s", m );
 	posix_print_stack_trace();
-	fclose( logx_file );
+	if ( logx_file )
+		fclose( logx_file );
 	_Exit( 1 );
 }
 
 
-static uint8_t alternate_stack[ SIGSTKSZ ];
+// Fixed size, because with _GNU_SOURCE glibc makes SIGSTKSZ a run-time value. 64 KiB covers
+// the kernel's signal frame (up to ~11 KiB with AMX state) plus the handler's own work
+// (fprintf, backtrace_symbols, addr2line for up to MAX_STACK_FRAMES frames).
+#define ALTERNATE_STACK_SIZE ( 64 * 1024 )
+static uint8_t alternate_stack[ ALTERNATE_STACK_SIZE ];
 static void stackframe_set_signal_handler( const char* progname )
 {
 	stackframe_program_name = progname;
@@ -203,7 +211,7 @@ static void stackframe_set_signal_handler( const char* progname )
 		stack_t ss = {};
 		/* malloc is usually used here, I'm not 100% sure my static allocation is valid but it seems to work just fine. */
 		ss.ss_sp = (void*)alternate_stack;
-		ss.ss_size = SIGSTKSZ;
+		ss.ss_size = ALTERNATE_STACK_SIZE;
 		ss.ss_flags = 0;
  
 		if (sigaltstack(&ss, NULL) != 0) { err(1, "sigaltstack"); }
