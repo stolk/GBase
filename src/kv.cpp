@@ -129,6 +129,7 @@ int kv_get_int( const char* key, int defaultvalue )
 	if ( f )
 	{
 		char line [ 128 ];
+		line[ 0 ] = 0;
 		char* rv = fgets( line, 128, f );
 		(void) rv;
 		fclose( f );
@@ -153,6 +154,7 @@ float kv_get_flt( const char* key, float defaultvalue )
 	if ( f )
 	{
 		char line [ 128 ];
+		line[ 0 ] = 0;
 		char* rv = fgets( line, 128, f );
 		(void) rv;
 		fclose( f );
